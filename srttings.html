@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账户设置 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+        --success: #4ade80;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after, .nav-links a.active::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Settings Container */
+    .settings-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Settings Header */
+    .settings-header {
+        margin-bottom: 2rem;
+    }
+
+    .settings-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .settings-subtitle {
+        color: var(--text-secondary);
+    }
+
+    /* Settings Layout */
+    .settings-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+
+    /* Settings Sidebar */
+    .settings-sidebar {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .sidebar-nav {
+        list-style: none;
+    }
+
+    .sidebar-nav li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-nav li:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        color: var(--text);
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+    }
+
+    .sidebar-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Settings Content */
+    .settings-content {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 2rem;
+    }
+
+    .settings-section {
+        margin-bottom: 2rem;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .settings-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-input {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 0.75rem 1rem;
+        color: var(--text);
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .form-input.error {
+        border-color: var(--danger);
+    }
+
+    .form-error {
+        color: var(--danger);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-hint {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .form-col {
+        flex: 1;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+    }
+
+    .btn-secondary:hover {
+        background-color: rgba(102, 192, 244, 0.1);
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+    }
+
+    .btn-danger:hover {
+        background-color: #dc2626;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: .4s;
+        border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+        background-color: var(--accent);
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+
+    /* Settings Options */
+    .settings-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .settings-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .settings-option:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .option-info {
+        flex: 1;
+    }
+
+    .option-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .option-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    /* Avatar Upload */
+    .avatar-upload {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .avatar-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--accent);
+    }
+
+    .avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .avatar-hint {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .payment-method:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .payment-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .payment-info {
+        flex: 1;
+    }
+
+    .payment-name {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .payment-details {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .payment-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .payment-btn {
+        background-color: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .payment-btn:hover {
+        color: var(--accent);
+    }
+
+    .payment-btn.delete:hover {
+        color: var(--danger);
+    }
+
+    /* Success Message */
+    .success-message {
+        background-color: rgba(74, 222, 128, 0.1);
+        border-left: 4px solid var(--success);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0 4px 4px 0;
+        display: none;
+    }
+
+    .success-message.show {
+        display: block;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Footer */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .settings-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .settings-sidebar {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .sidebar-nav li {
+            flex: 1;
+            min-width: 150px;
+            border-bottom: none;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-nav li:last-child {
+            border-right: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .avatar-upload {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sidebar-nav {
+            flex-direction: column;
+        }
+
+        .sidebar-nav li {
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-option {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .payment-method {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .payment-actions {
+            align-self: flex-end;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- Header & Navigation -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">游</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+            <a href="library.html">我的游戏库</a>
+            <a href="profile.html">个人资料</a>
+            <a href="wishlist.html">愿望单</a>
+            <a href="community.html">社区</a>
+            <a href="news.html">新闻</a>
+            <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- Settings Container -->
+<div class="settings-container">
+    <div class="settings-header">
+        <h1 class="settings-title">账户设置</h1>
+        <p class="settings-subtitle">管理您的账户偏好和设置</p>
+    </div>
+
+    <!-- Success Message (hidden by default) -->
+    <div class="success-message" id="successMessage">
+        您的设置已成功保存。
+    </div>
+
+    <!-- Settings Layout -->
+    <div class="settings-layout">
+        <!-- Settings Sidebar -->
+        <div class="settings-sidebar">
+            <ul class="sidebar-nav">
+                <li><a href="#profile" class="sidebar-link active" data-section="profile"><span class="sidebar-icon">👤</span> 个人资料</a></li>
+                <li><a href="#account" class="sidebar-link" data-section="account"><span class="sidebar-icon">🔐</span> 账户</a></li>
+                <li><a href="#privacy" class="sidebar-link" data-section="privacy"><span class="sidebar-icon">🔒</span> 隐私</a></li>
+                <li><a href="#notifications" class="sidebar-link" data-section="notifications"><span class="sidebar-icon">🔔</span> 通知</a></li>
+                <li><a href="#payment" class="sidebar-link" data-section="payment"><span class="sidebar-icon">💳</span> 支付</a></li>
+                <li><a href="#preferences" class="sidebar-link" data-section="preferences"><span class="sidebar-icon">⚙️</span> 偏好设置</a></li>
+            </ul>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+            <!-- Profile Section -->
+            <div class="settings-section" id="profile-section">
+                <h2 class="section-title">个人资料设置</h2>
+                
+                <div class="avatar-upload">
+                    <div class="avatar-preview">
+                        <img src="/placeholder.svg?height=100&width=100" alt="用户头像">
+                    </div>
+                    <div class="avatar-actions">
+                        <button class="btn">上传新头像</button>
+                        <button class="btn btn-secondary">移除</button>
+                        <p class="avatar-hint">推荐尺寸：500x500像素，最大2MB</p>
+                    </div>
+                </div>
+                
+                <form id="profile-form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="displayName" class="form-label">显示名称</label>
+                                <input type="text" id="displayName" class="form-input" value="张三">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="username" class="form-label">用户名</label>
+                                <input type="text" id="username" class="form-input" value="游戏猎人90">
+                                <p class="form-hint">这是您对其他用户可见的公开用户名</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bio" class="form-label">个人简介</label>
+                        <textarea id="bio" class="form-input" rows="4">热爱游戏的玩家，尤其喜欢角色扮演和策略游戏。目前沉迷于赛博奥德赛2077，正在探索新太平洋的每个角落。</textarea>
+                        <p class="form-hint">最多200个字符</p>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="location" class="form-label">位置</label>
+                                <input type="text" id="location" class="form-input" value="北京市">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="website" class="form-label">网站</label>
+                                <input type="url" id="website" class="form-input" value="https://zhangsan.com">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">取消</button>
+                        <button type="submit" class="btn">保存更改</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="settings-section" id="account-section" style="display: none;">
+                <h2 class="section-title">账户设置</h2>
+                
+                <form id="account-form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">电子邮件地址</label>
+                        <input type="email" id="email" class="form-input" value="zhangsan@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label">当前密码</label>
+                        <input type="password" id="currentPassword" class="form-input">
+                        <p class="form-hint">输入您的当前密码以进行更改</p>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="newPassword" class="form-label">新密码</label>
+                                <input type="password" id="newPassword" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label">确认新密码</label>
+                                <input type="password" id="confirmPassword" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="twoFactor" class="form-label">两步验证</label>
+                        <div class="settings-option">
+                            <div class="option-info">
+                                <div class="option-title">启用两步验证</div>
+                                <div class="option-description">通过要求验证码和密码，为您的账户添加额外的安全层。</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="twoFactor" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">取消</button>
+                        <button type="submit" class="btn">保存更改</button>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 3rem; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 2rem;">
+                    <h3 style="color: var(--danger); margin-bottom: 1rem;">危险区域</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">一旦删除您的账户，将无法恢复。请确认。</p>
+                    <button class="btn btn-danger">删除账户</button>
+                </div>
+            </div>
+            
+            <!-- Privacy Section -->
+            <div class="settings-section" id="privacy-section" style="display: none;">
+                <h2 class="section-title">隐私设置</h2>
+                
+                <div class="settings-options">
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">个人资料可见性</div>
+                            <div class="option-description">控制谁可以查看您的个人资料信息和活动。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>公开</option>
+                            <option>仅好友</option>
+                            <option>私密</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">游戏活动</div>
+                            <div class="option-description">允许其他人查看您正在玩的游戏以及游戏时长。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">好友请求</div>
+                            <div class="option-description">控制谁可以向您发送好友请求。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>所有人</option>
+                            <option>好友的好友</option>
+                            <option>没有人</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">个人资料评论</div>
+                            <div class="option-description">控制谁可以在您的个人资料上发表评论。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>所有人</option>
+                            <option>仅好友</option>
+                            <option>没有人</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">库存隐私</div>
+                            <div class="option-description">控制谁可以查看您的游戏库存和物品。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>公开</option>
+                            <option>仅好友</option>
+                            <option>私密</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary">取消</button>
+                    <button type="submit" class="btn">保存更改</button>
+                </div>
+            </div>
+            
+            <!-- Notifications Section -->
+            <div class="settings-section" id="notifications-section" style="display: none;">
+                <h2 class="section-title">通知设置</h2>
+                
+                <div class="settings-options">
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">电子邮件通知</div>
+                            <div class="option-description">接收关于重要更新和活动的电子邮件通知。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">游戏更新</div>
+                            <div class="option-description">当您库中的游戏更新时接收通知。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">好友活动</div>
+                            <div class="option-description">接收关于您好友活动的通知。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">愿望单通知</div>
+                            <div class="option-description">当您愿望单中的游戏打折时接收通知。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">社区活动</div>
+                            <div class="option-description">接收关于您的帖子和评论回复的通知。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">营销邮件</div>
+                            <div class="option-description">接收关于优惠、新发布和活动的促销邮件。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary">取消</button>
+                    <button type="submit" class="btn">保存更改</button>
+                </div>
+            </div>
+            
+            <!-- Payment Section -->
+            <div class="settings-section" id="payment-section" style="display: none;">
+                <h2 class="section-title">支付方式</h2>
+                
+                <div class="payment-methods">
+                    <!-- Payment Method 1 -->
+                    <div class="payment-method">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-info">
+                            <div class="payment-name">Visa 尾号为 4242</div>
+                            <div class="payment-details">过期日期 05/2026</div>
+                        </div>
+                        <div class="payment-actions">
+                            <button class="payment-btn">编辑</button>
+                            <button class="payment-btn delete">移除</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method 2 -->
+                    <div class="payment-method">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-info">
+                            <div class="payment-name">万事达卡尾号为 8888</div>
+                            <div class="payment-details">过期日期 12/2025</div>
+                        </div>
+                        <div class="payment-actions">
+                            <button class="payment-btn">编辑</button>
+                            <button class="payment-btn delete">移除</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method 3 -->
+                    <div class="payment-method">
+                        <div class="payment-icon">🅿️</div>
+                        <div class="payment-info">
+                            <div class="payment-name">支付宝</div>
+                            <div class="payment-details">zhangsan@example.com</div>
+                        </div>
+                        <div class="payment-actions">
+                            <button class="payment-btn">编辑</button>
+                            <button class="payment-btn delete">移除</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" style="margin-top: 1.5rem;">添加支付方式</button>
+                
+                <h3 class="section-title" style="margin-top: 2.5rem;">账单地址</h3>
+                
+                <form id="billing-form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="firstName" class="form-label">名字</label>
+                                <input type="text" id="firstName" class="form-input" value="张">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="lastName" class="form-label">姓氏</label>
+                                <input type="text" id="lastName" class="form-input" value="三">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address" class="form-label">地址</label>
+                        <input type="text" id="address" class="form-input" value="游戏大街123号">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="city" class="form-label">城市</label>
+                                <input type="text" id="city" class="form-input" value="北京">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="state" class="form-label">省/自治区</label>
+                                <input type="text" id="state" class="form-input" value="北京市">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="zipCode" class="form-label">邮政编码</label>
+                                <input type="text" id="zipCode" class="form-input" value="100000">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country" class="form-label">国家/地区</label>
+                        <select id="country" class="form-input">
+                            <option value="CN" selected>中国</option>
+                            <option value="US">美国</option>
+                            <option value="CA">加拿大</option>
+                            <option value="UK">英国</option>
+                            <option value="JP">日本</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">取消</button>
+                        <button type="submit" class="btn">保存更改</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Preferences Section -->
+            <div class="settings-section" id="preferences-section" style="display: none;">
+                <h2 class="section-title">偏好设置</h2>
+                
+                <div class="settings-options">
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">语言</div>
+                            <div class="option-description">选择您平台的首选语言。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>中文</option>
+                            <option>英文</option>
+                            <option>西班牙语</option>
+                            <option>法语</option>
+                            <option>德语</option>
+                            <option>日语</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">主题</div>
+                            <div class="option-description">选择明亮或暗黑主题。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>暗黑</option>
+                            <option>明亮</option>
+                            <option>系统默认</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">自动下载</div>
+                            <div class="option-description">自动下载游戏更新。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">显示成人内容</div>
+                            <div class="option-description">在您的商店中显示带有成人或限制级内容的游戏。</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-option">
+                        <div class="option-info">
+                            <div class="option-title">货币</div>
+                            <div class="option-description">选择您的首选价格货币。</div>
+                        </div>
+                        <select class="form-input" style="width: auto;">
+                            <option>人民币 (¥)</option>
+                            <option>美元 ($)</option>
+                            <option>欧元 (€)</option>
+                            <option>英镑 (£)</option>
+                            <option>日元 (¥)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary">取消</button>
+                    <button type="submit" class="btn">保存更改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+<div class="footer-content">
+    <div class="footer-about">
+        <a href="index.html" class="footer-logo">游戏中心</a>
+        <p>您的终极游戏目的地。在我们的高级游戏平台上发现、玩游戏并与全球玩家连接。</p>
+        <div class="social-links">
+            <a href="#" class="social-icon">f</a>
+            <a href="#" class="social-icon">t</a>
+            <a href="#" class="social-icon">in</a>
+            <a href="#" class="social-icon">ig</a>
+        </div>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">快速链接</h3>
+        <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="#">浏览游戏</a></li>
+            <li><a href="#">分类</a></li>
+            <li><a href="#">优惠与促销</a></li>
+            <li><a href="#">礼品卡</a></li>
+        </ul>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">支持</h3>
+        <ul class="footer-links">
+            <li><a href="#">帮助中心</a></li>
+            <li><a href="community.html">社区</a></li>
+            <li><a href="#">联系我们</a></li>
+            <li><a href="#">系统状态</a></li>
+            <li><a href="#">开发者API</a></li>
+        </ul>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">法律</h3>
+        <ul class="footer-links">
+            <li><a href="#">服务条款</a></li>
+            <li><a href="#">隐私政策</a></li>
+            <li><a href="#">退款政策</a></li>
+            <li><a href="#">Cookie政策</a></li>
+            <li><a href="#">用户协议</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="footer-bottom">
+    <p class="copyright">© 2025 游戏中心。保留所有权利。</p>
+    <div class="footer-nav">
+        <a href="#">隐私</a>
+        <a href="#">条款</a>
+        <a href="#">Cookies</a>
+        <a href="#">设置</a>
+    </div>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const settingsSections = document.querySelectorAll('.settings-section');
+    
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all links
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            
+            // Add active class to clicked link
+            this.classList.add('active');
+            
+            // Get the section to show
+            const sectionId = this.getAttribute('data-section');
+            
+            // Hide all sections
+            settingsSections.forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected section
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+        });
+    });
+    
+    // Form submission handling
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        });
+    });
+    
+    // Cancel button functionality
+    const cancelButtons = document.querySelectorAll('.btn-secondary');
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Reset form or navigate back
+            const form = this.closest('form');
+            if (form) {
+                form.reset();
+            }
+        });
+    });
+
+    // 更新购物车数量显示
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        const cartBtn = document.querySelector('.user-actions .btn');
+        if (cartBtn) {
+            cartBtn.textContent = `购物车 (${totalItems})`;
+        }
+    }
+
+    // 初始化时更新购物车数量
+    updateCartCount();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>购物车 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+        --success: #4ade80;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* 页头和导航 */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* 购物车容器 */
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .cart-header {
+        margin-bottom: 2rem;
+    }
+
+    .cart-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-subtitle {
+        color: var(--text-secondary);
+    }
+
+    /* 购物车布局 */
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+    }
+
+    /* 购物车商品 */
+    .cart-items {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .cart-item {
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background-color 0.3s ease;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .cart-item:hover {
+        background-color: var(--card-hover);
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-img {
+        width: 120px;
+        height: 70px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .cart-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cart-item-info {
+        flex: 1;
+    }
+
+    .cart-item-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .cart-item-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 1.1rem;
+    }
+
+    .cart-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .remove-btn {
+        background-color: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .remove-btn:hover {
+        color: var(--danger);
+    }
+
+    /* 空购物车 */
+    .empty-cart {
+        padding: 4rem 2rem;
+        text-align: center;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .empty-cart-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cart-message {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-cart-submessage {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* 订单摘要 */
+    .order-summary {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        position: sticky;
+        top: 100px;
+    }
+
+    .summary-title {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+    }
+
+    .summary-value {
+        font-weight: 500;
+    }
+
+    .summary-total {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 1rem;
+        padding-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 1.5rem;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(102, 192, 244, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(102, 192, 244, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(102, 192, 244, 0); }
+    }
+
+    .continue-shopping {
+        display: block;
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .continue-shopping:hover {
+        color: var(--accent);
+    }
+
+    /* 优惠码 */
+    .promo-code {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .promo-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .promo-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .promo-input {
+        flex: 1;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        color: var(--text);
+    }
+
+    .promo-input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .promo-btn {
+        background-color: transparent;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .promo-btn:hover {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    /* 推荐商品 */
+    .recommendations {
+        margin-top: 4rem;
+    }
+
+    .rec-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .rec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .rec-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .rec-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .rec-img {
+        height: 150px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .rec-info {
+        padding: 1rem;
+    }
+
+    .rec-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rec-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .rec-price {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    .add-to-cart {
+        display: block;
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 1rem;
+        text-align: center;
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-to-cart:hover {
+        background-color: rgba(102, 192, 244, 0.2);
+    }
+
+    /* 页脚 */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* 成功消息 */
+    .success-message {
+        background-color: rgba(74, 222, 128, 0.1);
+        border-left: 4px solid var(--success);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0 4px 4px 0;
+        display: none;
+    }
+
+    .success-message.show {
+        display: block;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* 响应式 */
+    @media (max-width: 992px) {
+        .cart-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .cart-item {
+            flex-direction: column;
+        }
+
+        .cart-item-img {
+            width: 100%;
+            height: 120px;
+        }
+
+        .rec-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .cart-item-actions {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .rec-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- 页头和导航 -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">G</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+            <a href="library.html">我的游戏库</a>
+            <a href="profile.html">个人资料</a>
+            <a href="wishlist.html">愿望单</a>
+            <a href="community.html">社区</a>
+            <a href="news.html">新闻</a>
+            <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- 购物车容器 -->
+<div class="cart-container">
+    <!-- 未登录提示 -->
+    <div id="not-logged-in" style="text-align: center; padding: 5rem 2rem; display: none;">
+        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.5;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--text);">用户您还未登录</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            请先登录以查看您的购物车信息。
+        </p>
+        <a href="login.html" class="btn" style="font-size: 1.1rem; padding: 0.75rem 2rem;">前往登录</a>
+    </div>
+
+    <!-- 购物车内容 -->
+    <div id="cartContent" style="display: none;">
+        <div class="cart-header">
+            <h1 class="cart-title">您的购物车</h1>
+            <p class="cart-subtitle">您的购物车中有 3 件商品</p>
+        </div>
+
+        <!-- 成功消息（默认隐藏） -->
+        <div class="success-message" id="successMessage">
+            优惠码 "SUMMER25" 已成功应用！您的订单已享受 25% 的折扣。
+        </div>
+
+        <!-- 购物车布局 -->
+        <div class="cart-layout">
+            <!-- 购物车商品 -->
+            <div class="cart-items">
+                <!-- 购物车商品 1 -->
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="/placeholder.svg?height=70&width=120" alt="游戏 1">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-title">赛博奥德赛2077</h3>
+                        <div class="cart-item-meta">动作，角色扮演，开放世界</div>
+                        <div class="cart-item-price">$59.99</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-btn">移除</button>
+                    </div>
+                </div>
+                
+                <!-- 购物车商品 2 -->
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="/placeholder.svg?height=70&width=120" alt="游戏 2">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-title">星际前线</h3>
+                        <div class="cart-item-meta">策略，模拟</div>
+                        <div class="cart-item-price">$39.99</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-btn">移除</button>
+                    </div>
+                </div>
+                
+                <!-- 购物车商品 3 -->
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="/placeholder.svg?height=70&width=120" alt="游戏 3">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-title">赛博反乌托邦</h3>
+                        <div class="cart-item-meta">角色扮演，策略</div>
+                        <div class="cart-item-price">$44.99</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-btn">移除</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 订单摘要 -->
+            <div class="order-summary">
+                <h2 class="summary-title">订单摘要</h2>
+                <div class="summary-item">
+                    <div class="summary-label">小计 (<span id="totalItems">0</span> 件商品)</div>
+                    <div class="summary-value" id="subtotalValue">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">折扣</div>
+                    <div class="summary-value" id="discountValue">$0.00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">税</div>
+                    <div class="summary-value" id="taxValue">$0.00</div>
+                </div>
+                <div class="summary-total">
+                    <div class="summary-label">总计</div>
+                    <div class="summary-value" id="totalValue">$0.00</div>
+                </div>
+                
+                <!-- 优惠码 -->
+                <div class="promo-code">
+                    <h3 class="promo-title">应用优惠码</h3>
+                    <div class="promo-form">
+                        <input type="text" class="promo-input" placeholder="输入优惠码" id="promoInput">
+                        <button class="promo-btn" id="applyPromoBtn">应用</button>
+                    </div>
+                </div>
+                
+                <button class="btn checkout-btn">去结算</button>
+                <a href="index.html" class="continue-shopping">继续购物</a>
+            </div>
+        </div>
+        
+        <!-- 推荐商品 -->
+        <div class="recommendations">
+            <h2 class="rec-title">您可能还会喜欢</h2>
+            <div class="rec-grid">
+                <!-- 推荐商品 1 -->
+                <div class="rec-card">
+                    <img src="/placeholder.svg?height=150&width=250" alt="推荐商品 1" class="rec-img">
+                    <div class="rec-info">
+                        <h3 class="rec-name">霓虹阴影</h3>
+                        <div class="rec-meta">
+                            <span>动作，角色扮演</span>
+                            <span class="rec-price">$49.99</span>
+                        </div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+                
+                <!-- 推荐商品 2 -->
+                <div class="rec-card">
+                    <img src="/placeholder.svg?height=150&width=250" alt="推荐商品 2" class="rec-img">
+                    <div class="rec-info">
+                        <h3 class="rec-name">数字前沿</h3>
+                        <div class="rec-meta">
+                            <span>开放世界，冒险</span>
+                            <span class="rec-price">$54.99</span>
+                        </div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+                
+                <!-- 推荐商品 3 -->
+                <div class="rec-card">
+                    <img src="/placeholder.svg?height=150&width=250" alt="推荐商品 3" class="rec-img">
+                    <div class="rec-info">
+                        <h3 class="rec-name">量子突破</h3>
+                        <div class="rec-meta">
+                            <span>动作，科幻</span>
+                            <span class="rec-price">$39.99</span>
+                        </div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+                
+                <!-- 推荐商品 4 -->
+                <div class="rec-card">
+                    <img src="/placeholder.svg?height=150&width=250" alt="推荐商品 4" class="rec-img">
+                    <div class="rec-info">
+                        <h3 class="rec-name">太空奥德赛</h3>
+                        <div class="rec-meta">
+                            <span>冒险，科幻</span>
+                            <span class="rec-price">$35.99</span>
+                        </div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">游戏中心</a>
+            <p>您的终极游戏目的地。在我们的高级游戏平台上发现、游玩并与全球玩家连接。</p>
+            <div class="social-links">
+                <a href="#" class="social-icon">f</a>
+                <a href="#" class="social-icon">t</a>
+                <a href="#" class="social-icon">in</a>
+                <a href="#" class="social-icon">ig</a>
+            </div>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">快速链接</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="#">浏览游戏</a></li>
+                <li><a href="#">类别</a></li>
+                <li><a href="#">优惠与促销</a></li>
+                <li><a href="#">礼品卡</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">支持</h3>
+            <ul class="footer-links">
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="community.html">社区</a></li>
+                <li><a href="#">联系我们</a></li>
+                <li><a href="#">系统状态</a></li>
+                <li><a href="#">开发者API</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">法律</h3>
+            <ul class="footer-links">
+                <li><a href="#">服务条款</a></li>
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">退款政策</a></li>
+                <li><a href="#">Cookie政策</a></li>
+                <li><a href="#">用户协议</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p class="copyright">© 2025 游戏中心。版权所有。</p>
+        <div class="footer-nav">
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+            <a href="#">Cookie</a>
+            <a href="#">设置</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查用户是否已登录
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const notLoggedInDiv = document.getElementById('not-logged-in');
+        const cartContent = document.getElementById('cartContent');
+
+        // 根据登录状态显示相应内容
+        if (!isLoggedIn) {
+            notLoggedInDiv.style.display = 'block';
+            cartContent.style.display = 'none';
+            // 隐藏购物车数量
+            const cartBtn = document.querySelector('.user-actions .btn');
+            cartBtn.textContent = '购物车 (0)';
+            return;
+        } else {
+            notLoggedInDiv.style.display = 'none';
+            cartContent.style.display = 'block';
+        }
+
+        // 从本地存储获取购物车数据
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // 更新购物车数量显示
+        updateCartCount();
+        
+        // 渲染购物车商品
+        renderCartItems();
+        
+        // 更新总金额
+        updateCartTotal();
+        
+        // 渲染购物车商品
+        function renderCartItems() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2 class="empty-cart-message">您的购物车为空</h2>
+                        <p class="empty-cart-submessage">您尚未将任何游戏添加到购物车中。</p>
+                        <a href="index.html" class="btn">浏览游戏</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            cartItemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="${item.cover_image}" alt="${item.title}">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-title">${item.title}</h3>
+                        <div class="cart-item-meta">${item.genres.join('，')}</div>
+                        <div class="cart-item-price">$${item.price}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-btn" data-index="${index}">移除</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 添加移除按钮事件
+            addRemoveButtonEvents();
+        }
+        
+        // 添加移除按钮事件
+        function addRemoveButtonEvents() {
+            const removeBtns = document.querySelectorAll('.remove-btn');
+            removeBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    removeCartItem(index);
+                });
+            });
+        }
+        
+        // 移除购物车商品
+        function removeCartItem(index) {
+            const cartItem = document.querySelector(`[data-index="${index}"]`).closest('.cart-item');
+            cartItem.style.opacity = 0;
+            cartItem.style.height = cartItem.offsetHeight + 'px';
+            cartItem.style.transition = 'opacity 0.3s ease, height 0.5s ease 0.3s';
+            
+            setTimeout(() => {
+                cartItem.style.height = '0';
+                cartItem.style.padding = '0';
+                cartItem.style.margin = '0';
+                cartItem.style.overflow = 'hidden';
+            }, 300);
+            
+            setTimeout(() => {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCartItems();
+                updateCartCount();
+                updateCartTotal();
+            }, 800);
+        }
+        
+        // 更新购物车数量
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartBtn = document.querySelector('.user-actions .btn');
+            const cartSubtitle = document.querySelector('.cart-subtitle');
+            
+            cartBtn.textContent = `购物车 (${totalItems})`;
+            cartSubtitle.textContent = `您的购物车中有 ${totalItems} 件商品`;
+        }
+        
+        // 更新总金额
+        function updateCartTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('subtotalValue').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('taxValue').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('totalValue').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // 优惠码功能
+        const applyPromoBtn = document.getElementById('applyPromoBtn');
+        const promoInput = document.getElementById('promoInput');
+        const successMessage = document.getElementById('successMessage');
+        const discountValue = document.getElementById('discountValue');
+        
+        applyPromoBtn.addEventListener('click', () => {
+            if (promoInput.value.toUpperCase() === 'SUMMER25') {
+                successMessage.classList.add('show');
+                applyPromoBtn.disabled = true;
+                applyPromoBtn.textContent = '已应用';
+                applyPromoBtn.style.backgroundColor = 'var(--success)';
+                applyPromoBtn.style.borderColor = 'var(--success)';
+                promoInput.disabled = true;
+                
+                // 计算并显示折扣
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const discount = subtotal * 0.25;
+                discountValue.textContent = `-$${discount.toFixed(2)}`;
+                discountValue.style.color = 'var(--success)';
+                
+                // 更新总计
+                const tax = subtotal * 0.08;
+                const newTotal = subtotal - discount + tax;
+                document.getElementById('totalValue').textContent = `$${newTotal.toFixed(2)}`;
+                
+                // 滚动显示消息
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                promoInput.style.borderColor = 'var(--danger)';
+                promoInput.value = '';
+                promoInput.placeholder = '无效的优惠码。尝试使用 SUMMER25';
+                
+                setTimeout(() => {
+                    promoInput.style.borderColor = '';
+                    promoInput.placeholder = '输入优惠码';
+                }, 2000);
+            }
+        });
+        
+        // 结算按钮点击
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        checkoutBtn.addEventListener('click', () => {
+            // 生成随机订单号
+            const orderId = 'GH-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // 获取当前日期
+            const orderDate = new Date().toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // 获取购物车商品信息
+            const orderItems = cart.map(item => ({
+                title: item.title,
+                genres: item.genres,
+                price: item.price,
+                cover_image: item.cover_image
+            }));
+            
+            // 计算订单总金额
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+            
+            // 创建订单对象
+            const order = {
+                id: orderId,
+                date: orderDate,
+                status: 'completed',
+                items: orderItems,
+                subtotal: subtotal.toFixed(2),
+                tax: tax.toFixed(2),
+                total: total.toFixed(2)
+            };
+            
+            // 获取现有订单或创建新数组
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders.unshift(order); // 将新订单添加到数组开头
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            const cartLayout = document.querySelector('.cart-layout');
+            cartLayout.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; animation: fadeIn 0.8s ease;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem; color: var(--success);">✓</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">感谢您的购买！</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">您的订单已成功下单。确认邮件已发送至您的注册邮箱。</p>
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">订单编号：${orderId}</p>
+                    <p style="margin-bottom: 2rem;">${orderDate}</p>
+                    <a href="order-page.html" class="btn" style="display: inline-block; padding: 0.75rem 2rem;">查看订单</a>
+                </div>
+            `;
+            
+            // 清空购物车
+            localStorage.removeItem('cart');
+            
+            // 更新购物车数量为 0
+            const cartBtn = document.querySelector('.user-actions .btn');
+            cartBtn.textContent = '购物车 (0)';
+            
+            // 更新页面标题和副标题
+            document.querySelector('.cart-title').textContent = '订单确认';
+            document.querySelector('.cart-subtitle').textContent = '您的订单已成功下单';
+            
+            // 隐藏推荐商品
+            document.querySelector('.recommendations').style.display = 'none';
+        });
+    });
+</script>
+</body>
+</html>

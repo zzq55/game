@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>愿望单 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+        --success: #4ade80;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after, .nav-links a.active::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Wishlist Container */
+    .wishlist-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Wishlist Header */
+    .wishlist-header {
+        margin-bottom: 2rem;
+    }
+
+    .wishlist-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .wishlist-subtitle {
+        color: var(--text-secondary);
+    }
+
+    /* Wishlist Controls */
+    .wishlist-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .wishlist-search {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .wishlist-search input {
+        width: 100%;
+        background-color: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        color: var(--text);
+        font-size: 1rem;
+    }
+
+    .wishlist-search input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .wishlist-search::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .sort-controls {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .sort-dropdown {
+        position: relative;
+    }
+
+    .sort-btn {
+        background-color: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .sort-btn:hover {
+        border-color: var(--accent);
+    }
+
+    .sort-btn::after {
+        content: '▼';
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .sort-dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--card-bg);
+        border-radius: 4px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        min-width: 180px;
+        z-index: 10;
+        display: none;
+    }
+
+    .sort-dropdown-content.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sort-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .sort-option:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .sort-option.active {
+        color: var(--accent);
+    }
+
+    .action-btn {
+        background-color: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    /* Wishlist Grid */
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .wishlist-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        animation: fadeIn 0.5s ease;
+        position: relative;
+    }
+
+    .wishlist-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-hover);
+    }
+
+    .wishlist-img {
+        height: 180px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .wishlist-card:hover .wishlist-img {
+        transform: scale(1.05);
+    }
+
+    .wishlist-info {
+        padding: 1.5rem;
+    }
+
+    .wishlist-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .wishlist-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .wishlist-price {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .wishlist-discount {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .discount-badge {
+        background-color: var(--success);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .original-price {
+        color: var(--text-secondary);
+        text-decoration: line-through;
+        font-size: 0.9rem;
+    }
+
+    .wishlist-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .wishlist-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .wishlist-btn {
+        flex: 1;
+        padding: 0.75rem 0;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .remove-btn {
+        background-color: transparent;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+    }
+
+    .remove-btn:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+    }
+
+    .rank-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: var(--accent);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--danger);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Empty Wishlist */
+    .empty-wishlist {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 4rem 2rem;
+        text-align: center;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-message {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* Recommendations */
+    .recommendations {
+        margin-top: 4rem;
+    }
+
+    .rec-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .rec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .rec-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .rec-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .rec-img {
+        height: 150px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .rec-info {
+        padding: 1rem;
+    }
+
+    .rec-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rec-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .rec-price {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    .add-to-wishlist {
+        display: block;
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 1rem;
+        text-align: center;
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-to-wishlist:hover {
+        background-color: rgba(102, 192, 244, 0.2);
+    }
+
+    /* Footer */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .wishlist-controls {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .wishlist-search {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .sort-controls {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .rec-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .wishlist-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .rec-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sort-controls {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- Header & Navigation -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">G</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+            <a href="library.html">我的游戏库</a>
+            <a href="profile.html">个人资料</a>
+            <a href="wishlist.html" class="active">愿望单</a>
+            <a href="community.html">社区</a>
+            <a href="news.html">新闻</a>
+            <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- Wishlist Container -->
+<div class="wishlist-container">
+    <!-- 未登录提示 -->
+    <div id="not-logged-in" style="text-align: center; padding: 5rem 2rem; display: none;">
+        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.5;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--text);">用户您还未登录</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            请先登录以查看您的愿望单和游戏推荐。
+        </p>
+        <a href="login.html" class="btn" style="font-size: 1.1rem; padding: 0.75rem 2rem;">前往登录</a>
+    </div>
+
+    <!-- 登录后显示的内容 -->
+    <div id="wishlist-content" style="display: none;">
+        <div class="wishlist-header">
+            <h1 class="wishlist-title">您的愿望单</h1>
+            <p class="wishlist-subtitle">您在愿望单中有 8 款游戏</p>
+        </div>
+
+        <!-- Wishlist Controls -->
+        <div class="wishlist-controls">
+            <div class="wishlist-search">
+                <input type="text" placeholder="搜索您的愿望单...">
+            </div>
+            
+            <div class="sort-controls">
+                <div class="sort-dropdown">
+                    <button class="sort-btn" id="sortBtn">排序：排名</button>
+                    <div class="sort-dropdown-content" id="sortDropdown">
+                        <div class="sort-option active">排名</div>
+                        <div class="sort-option">名称（A-Z）</div>
+                        <div class="sort-option">价格（低到高）</div>
+                        <div class="sort-option">价格（高到低）</div>
+                        <div class="sort-option">发布时间</div>
+                        <div class="sort-option">添加日期</div>
+                    </div>
+                </div>
+                
+                <button class="action-btn" id="clearWishlistBtn">清空愿望单</button>
+            </div>
+        </div>
+
+        <!-- Wishlist Grid -->
+        <div class="wishlist-grid" id="wishlistGrid">
+            <div class="empty-wishlist">
+                <div class="empty-icon">❤️</div>
+                <h2 class="empty-title">您的愿望单为空</h2>
+                <p class="empty-message">看起来您还没有将任何游戏添加到愿望单中。</p>
+                <a href="index.html" class="btn">浏览游戏</a>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations">
+            <h2 class="rec-title">根据您的愿望单推荐</h2>
+            <div class="rec-grid">
+                <!-- 推荐游戏将通过 JavaScript 动态添加 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">GameHub</a>
+            <p>您的终极游戏目的地。在我们的高级游戏平台上发现、游玩并与其他玩家互动。</p>
+            <div class="social-links">
+                <a href="#" class="social-icon">f</a>
+                <a href="#" class="social-icon">t</a>
+                <a href="#" class="social-icon">in</a>
+                <a href="#" class="social-icon">ig</a>
+            </div>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">快速链接</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="#">浏览游戏</a></li>
+                <li><a href="#">游戏分类</a></li>
+                <li><a href="#">优惠与促销</a></li>
+                <li><a href="#">礼品卡</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">支持</h3>
+            <ul class="footer-links">
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="community.html">社区</a></li>
+                <li><a href="#">联系我们</a></li>
+                <li>a href="#">系统状态</a></li>
+                <li><a href="#">开发者 API</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">法律</h3>
+            <ul class="footer-links">
+                <li><a href="#">服务条款</a></li>
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">退款政策</a></li>
+                <li><a href="#">Cookie 政策</a></li>
+                <li><a href="#">用户协议</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p class="copyright">© 2025 GameHub. 保留所有权利。</p>
+        <div class="footer-nav">
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+            <a href="#">Cookies</a>
+            <a href="#">设置</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查用户是否已登录
+        function checkLoginStatus() {
+            // 通过localStorage检查登录状态
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // 获取页面元素
+            const notLoggedInDiv = document.getElementById('not-logged-in');
+            const wishlistContentDiv = document.getElementById('wishlist-content');
+            
+            // 根据登录状态显示对应内容
+            if (isLoggedIn) {
+                notLoggedInDiv.style.display = 'none';
+                wishlistContentDiv.style.display = 'block';
+                // 加载愿望单数据
+                loadGamesData();
+            } else {
+                notLoggedInDiv.style.display = 'block';
+                wishlistContentDiv.style.display = 'none';
+            }
+        }
+
+        // 游戏数据
+        let gamesData = [];
+        let wishlistItems = [];
+
+        // 加载游戏数据
+        async function loadGamesData() {
+            try {
+                const response = await fetch('games.json');
+                const data = await response.json();
+                gamesData = data.games;
+                
+                // 从 localStorage 加载愿望单数据
+                const savedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+                wishlistItems = savedWishlist;
+                
+                // 更新显示
+                updateWishlistDisplay();
+                updateWishlistCount();
+                updateRecommendations();
+                // 初始化购物车数量显示
+                updateCartCount();
+            } catch (error) {
+                console.error('加载游戏数据失败:', error);
+            }
+        }
+
+        // 页面加载时检查登录状态
+        checkLoginStatus();
+
+        // 更新推荐游戏
+        function updateRecommendations() {
+            const recGrid = document.querySelector('.rec-grid');
+            recGrid.innerHTML = '';
+
+            // 随机选择4个游戏作为推荐
+            const recommendedGames = gamesData
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 4);
+
+            recommendedGames.forEach(game => {
+                const recCard = document.createElement('div');
+                recCard.className = 'rec-card';
+                recCard.innerHTML = `
+                    <img src="${game.cover_image}" alt="${game.title}" class="rec-img">
+                    <div class="rec-info">
+                        <h3 class="rec-name">${game.title}</h3>
+                        <div class="rec-meta">
+                            <span>${game.genres.join('，')}</span>
+                            <span class="rec-price">¥${game.price}</span>
+                        </div>
+                        <button class="add-to-wishlist" data-game-id="${game.id}">加入愿望单</button>
+                    </div>
+                `;
+                recGrid.appendChild(recCard);
+            });
+
+            // 添加推荐游戏的事件监听
+            document.querySelectorAll('.add-to-wishlist').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const gameId = parseInt(e.target.dataset.gameId);
+                    addToWishlist(gameId);
+                });
+            });
+        }
+
+        // 添加游戏到愿望单
+        function addToWishlist(gameId) {
+            const game = gamesData.find(g => g.id === gameId);
+            if (!game) return;
+
+            // 检查是否已经在愿望单中
+            if (wishlistItems.some(item => item.id === gameId)) {
+                alert('该游戏已在您的愿望单中！');
+                return;
+            }
+
+            wishlistItems.push(game);
+            updateWishlistDisplay();
+            updateWishlistCount();
+        }
+
+        // 从愿望单中移除游戏
+        function removeFromWishlist(gameId) {
+            wishlistItems = wishlistItems.filter(item => item.id !== gameId);
+            // 更新 localStorage
+            localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+            updateWishlistDisplay();
+            updateWishlistCount();
+        }
+
+        // 更新愿望单显示
+        function updateWishlistDisplay() {
+            const wishlistGrid = document.getElementById('wishlistGrid');
+            
+            if (wishlistItems.length === 0) {
+                wishlistGrid.innerHTML = `
+                    <div class="empty-wishlist">
+                        <div class="empty-icon">❤️</div>
+                        <h2 class="empty-title">您的愿望单为空</h2>
+                        <p class="empty-message">看起来您还没有将任何游戏添加到愿望单中。</p>
+                        <a href="index.html" class="btn">浏览游戏</a>
+                    </div>
+                `;
+                return;
+            }
+
+            wishlistGrid.innerHTML = wishlistItems.map((game, index) => `
+                <div class="wishlist-card">
+                    <div class="rank-badge">${index + 1}</div>
+                    <img src="${game.cover_image}" alt="${game.title}" class="wishlist-img">
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-title">${game.title}</h3>
+                        <div class="wishlist-meta">
+                            <span>${game.genres.join('，')}</span>
+                        </div>
+                        <div class="wishlist-price">¥${game.price}</div>
+                        <div class="wishlist-tags">
+                            ${game.genres.slice(0, 3).map(genre => `<span class="tag">${genre}</span>`).join('')}
+                        </div>
+                        <div class="wishlist-actions">
+                            <button class="btn wishlist-btn add-to-cart-btn" data-game-id="${game.id}">加入购物车</button>
+                            <button class="btn wishlist-btn remove-btn" data-game-id="${game.id}">移除</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // 添加移除按钮的事件监听
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const gameId = parseInt(e.target.dataset.gameId);
+                    removeFromWishlist(gameId);
+                });
+            });
+
+            // 添加加入购物车按钮的事件监听
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const gameId = parseInt(e.target.dataset.gameId);
+                    addToCart(gameId);
+                });
+            });
+        }
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const cartButton = document.querySelector('.user-actions .btn');
+            if (cartButton) {
+                cartButton.textContent = `购物车 (${totalItems})`;
+            }
+        }
+
+        // 添加到购物车
+        function addToCart(gameId) {
+            // 获取当前购物车数据
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // 查找要添加的游戏
+            const game = wishlistItems.find(item => item.id === gameId);
+            if (!game) return;
+
+            // 检查游戏是否已在购物车中
+            const existingItem = cart.find(item => item.id === gameId);
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                // 添加新游戏到购物车
+                cart.push({
+                    id: game.id,
+                    title: game.title,
+                    price: game.price,
+                    cover_image: game.cover_image,
+                    genres: game.genres,
+                    quantity: 1
+                });
+            }
+            
+            // 保存更新后的购物车数据
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // 更新购物车数量显示
+            updateCartCount();
+            
+            // 提示用户
+            alert('已成功添加到购物车！');
+        }
+
+        // 更新愿望单数量
+        function updateWishlistCount() {
+            const wishlistSubtitle = document.querySelector('.wishlist-subtitle');
+            wishlistSubtitle.textContent = `您在愿望单中有 ${wishlistItems.length} 款游戏`;
+        }
+
+        // 排序功能
+        const sortBtn = document.getElementById('sortBtn');
+        const sortDropdown = document.getElementById('sortDropdown');
+        
+        sortBtn.addEventListener('click', () => {
+            sortDropdown.classList.toggle('show');
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (!e.target.matches('.sort-btn')) {
+                sortDropdown.classList.remove('show');
+            }
+        });
+        
+        const sortOptions = document.querySelectorAll('#sortDropdown .sort-option');
+        sortOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                sortOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                sortBtn.textContent = '排序：' + option.textContent;
+                sortDropdown.classList.remove('show');
+                
+                // 根据选择的排序方式对愿望单进行排序
+                const sortType = option.textContent;
+                switch(sortType) {
+                    case '排名':
+                        wishlistItems.sort((a, b) => wishlistItems.indexOf(a) - wishlistItems.indexOf(b));
+                        break;
+                    case '名称（A-Z）':
+                        wishlistItems.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                    case '价格（低到高）':
+                        wishlistItems.sort((a, b) => a.price - b.price);
+                        break;
+                    case '价格（高到低）':
+                        wishlistItems.sort((a, b) => b.price - a.price);
+                        break;
+                    case '发布时间':
+                        wishlistItems.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+                        break;
+                    case '添加日期':
+                        // 保持原有顺序
+                        break;
+                }
+                updateWishlistDisplay();
+            });
+        });
+        
+        // 清空愿望单按钮
+        const clearWishlistBtn = document.getElementById('clearWishlistBtn');
+        clearWishlistBtn.addEventListener('click', () => {
+            if (confirm('您确定要清空您的整个愿望单吗？')) {
+                wishlistItems = [];
+                updateWishlistDisplay();
+                updateWishlistCount();
+            }
+        });
+
+        // 搜索功能
+        const searchInput = document.querySelector('.wishlist-search input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const wishlistCards = document.querySelectorAll('.wishlist-card');
+            
+            wishlistCards.forEach(card => {
+                const gameTitle = card.querySelector('.wishlist-title').textContent.toLowerCase();
+                const gameTags = card.querySelectorAll('.tag');
+                let matchFound = gameTitle.includes(searchTerm);
+                
+                gameTags.forEach(tag => {
+                    if (tag.textContent.toLowerCase().includes(searchTerm)) {
+                        matchFound = true;
+                    }
+                });
+                
+                card.style.display = matchFound ? '' : 'none';
+            });
+        });
+    });
+</script>
+</body>
+</html>

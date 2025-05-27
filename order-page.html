@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的订单 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+        --success: #4ade80;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --steam-bg: #1b2838;
+        --steam-card: #16202d;
+        --steam-border: #2a475e;
+        --steam-success: #5c7e10;
+        --steam-success-hover: #6d9512;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--steam-bg);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* 页头和导航 */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 2px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background-color: var(--steam-success);
+    }
+
+    .btn-success:hover {
+        background-color: var(--steam-success-hover);
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+    }
+
+    .btn-danger:hover {
+        background-color: #ff3333;
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+    }
+
+    .btn-outline:hover {
+        background-color: rgba(102, 192, 244, 0.1);
+    }
+
+    /* 登录提示样式 */
+    .login-prompt {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .login-prompt .empty-orders {
+        background-color: var(--steam-card);
+        border: 1px solid var(--steam-border);
+        border-radius: 4px;
+        padding: 3rem 2rem;
+    }
+
+    .login-prompt .empty-orders-icon {
+        color: var(--accent);
+        animation: pulseIcon 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseIcon {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .login-prompt .btn {
+        background-color: var(--accent);
+        margin-top: 1rem;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    .login-prompt .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* 订单容器 */
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .orders-header {
+        margin-bottom: 2rem;
+    }
+
+    .orders-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .orders-subtitle {
+        color: var(--text-secondary);
+    }
+
+    /* 订单过滤器 */
+    .order-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--steam-border);
+        padding-bottom: 1rem;
+    }
+
+    .filter-btn {
+        background-color: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+    }
+
+    .filter-btn.active {
+        border-bottom: 2px solid var(--accent);
+    }
+
+    /* 订单卡片 */
+    .order-card {
+        background-color: var(--steam-card);
+        border-radius: 2px;
+        border: 1px solid var(--steam-border);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .order-header {
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--steam-border);
+    }
+
+    .order-date {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .order-id {
+        font-weight: 600;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: var(--warning);
+        color: #000;
+    }
+
+    .status-completed {
+        background-color: var(--steam-success);
+        color: #fff;
+    }
+
+    .status-cancelled {
+        background-color: var(--danger);
+        color: #fff;
+    }
+
+    .order-content {
+        padding: 1.5rem;
+    }
+
+    .order-items {
+        margin-bottom: 1.5rem;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .order-item-img {
+        width: 120px;
+        height: 70px;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .order-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .order-item-info {
+        flex: 1;
+    }
+
+    .order-item-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .order-item-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-item-price {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .order-summary {
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 1.5rem;
+        border-radius: 2px;
+        margin-top: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .summary-row:last-child {
+        margin-bottom: 0;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--steam-border);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+    }
+
+    .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--steam-border);
+    }
+
+    /* 支付方式 */
+    .payment-methods {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .payment-method {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--steam-border);
+        border-radius: 2px;
+        padding: 1rem;
+        flex: 1;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .payment-method:hover {
+        border-color: var(--accent);
+    }
+
+    .payment-method.selected {
+        border-color: var(--accent);
+        background-color: rgba(102, 192, 244, 0.1);
+    }
+
+    .payment-method.selected::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: var(--accent);
+        font-weight: bold;
+    }
+
+    .payment-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .payment-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .payment-description {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* 支付模态框 */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal {
+        background-color: var(--steam-card);
+        border: 1px solid var(--steam-border);
+        border-radius: 2px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--steam-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+        color: var(--accent);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--steam-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    /* 表单样式 */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--steam-border);
+        border-radius: 2px;
+        color: var(--text);
+        transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    /* 确认取消模态框 */
+    .confirm-message {
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .confirm-icon {
+        font-size: 3rem;
+        color: var(--warning);
+        margin-bottom: 1rem;
+    }
+
+    /* 页脚 */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* 成功消息 */
+    .success-message {
+        background-color: rgba(74, 222, 128, 0.1);
+        border-left: 4px solid var(--success);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0 4px 4px 0;
+        display: none;
+    }
+
+    .success-message.show {
+        display: block;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* 空订单 */
+    .empty-orders {
+        padding: 4rem 2rem;
+        text-align: center;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .empty-orders-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-orders-message {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-orders-submessage {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* 响应式 */
+    @media (max-width: 992px) {
+        .payment-methods {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .order-item {
+            flex-direction: column;
+        }
+
+        .order-item-img {
+            width: 100%;
+            height: 120px;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .order-actions {
+            flex-direction: column;
+        }
+
+        .order-actions .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .order-filters {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- 页头和导航 -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">G</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+            <a href="library.html">我的游戏库</a>
+            <a href="profile.html">个人资料</a>
+            <a href="wishlist.html">愿望单</a>
+            <a href="community.html">社区</a>
+            <a href="news.html">新闻</a>
+            <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- 登录提示 -->
+<div class="login-prompt" id="loginPrompt" style="display: none;">
+    <div class="empty-orders">
+        <div class="empty-orders-icon">🔒</div>
+        <h2 class="empty-orders-message">您还未登录</h2>
+        <p class="empty-orders-submessage">请先登录以查看您的订单信息</p>
+        <a href="login.html" class="btn">立即登录</a>
+    </div>
+</div>
+
+<!-- 订单容器 -->
+<div class="orders-container">
+    <!-- 未登录提示 -->
+    <div id="not-logged-in" style="text-align: center; padding: 5rem 2rem; display: none;">
+        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.5;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--text);">用户您还未登录</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            请先登录以查看您的订单信息。
+        </p>
+        <a href="login.html" class="btn" style="font-size: 1.1rem; padding: 0.75rem 2rem;">前往登录</a>
+    </div>
+
+    <!-- 订单内容 -->
+    <div id="ordersContent" style="display: none;">
+        <div class="orders-header">
+            <h1 class="orders-title">我的订单</h1>
+            <p class="orders-subtitle">查看和管理您的所有订单</p>
+        </div>
+
+        <!-- 成功消息（默认隐藏） -->
+        <div class="success-message" id="successMessage">
+            订单操作成功完成！
+        </div>
+
+        <!-- 订单过滤器 -->
+        <div class="order-filters">
+            <button class="filter-btn active" data-filter="completed">已完成</button>
+        </div>
+
+        <!-- 订单列表 -->
+        <div class="orders-list">
+            <!-- 初始为空，由JavaScript动态填充 -->
+        </div>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">游戏中心</a>
+            <p>您的终极游戏目的地。在我们的高级游戏平台上发现、游玩并与全球玩家连接。</p>
+            <div class="social-links">
+                <a href="#" class="social-icon">f</a>
+                <a href="#" class="social-icon">t</a>
+                <a href="#" class="social-icon">in</a>
+                <a href="#" class="social-icon">ig</a>
+            </div>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">快速链接</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="#">浏览游戏</a></li>
+                <li><a href="#">类别</a></li>
+                <li><a href="#">优惠与促销</a></li>
+                <li><a href="#">礼品卡</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">支持</h3>
+            <ul class="footer-links">
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="community.html">社区</a></li>
+                <li><a href="#">联系我们</a></li>
+                <li><a href="#">系统状态</a></li>
+                <li><a href="#">开发者API</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">法律</h3>
+            <ul class="footer-links">
+                <li><a href="#">服务条款</a></li>
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">退款政策</a></li>
+                <li><a href="#">Cookie政策</a></li>
+                <li><a href="#">用户协议</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p class="copyright">© 2025 游戏中心。版权所有。</p>
+        <div class="footer-nav">
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+            <a href="#">Cookie</a>
+            <a href="#">设置</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查用户是否已登录
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const notLoggedInDiv = document.getElementById('not-logged-in');
+        const ordersContent = document.getElementById('ordersContent');
+
+        // 根据登录状态显示相应内容
+        if (!isLoggedIn) {
+            notLoggedInDiv.style.display = 'block';
+            ordersContent.style.display = 'none';
+            return;
+        } else {
+            notLoggedInDiv.style.display = 'none';
+            ordersContent.style.display = 'block';
+        }
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            try {
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                const cartCount = document.getElementById('cart-count');
+                
+                // 确保cartCount元素存在
+                if (cartCount) {
+                    // 计算总数量（考虑每个商品的数量）
+                    const totalItems = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+                    cartCount.textContent = totalItems;
+                    
+                    // 如果购物车为空，显示0
+                    if (totalItems === 0) {
+                        cartCount.textContent = '0';
+                    }
+                }
+            } catch (error) {
+                console.error('更新购物车数量时出错:', error);
+                // 发生错误时显示0
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) {
+                    cartCount.textContent = '0';
+                }
+            }
+        }
+
+        // 监听localStorage变化
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cartItems') {
+                updateCartCount();
+            }
+        });
+
+        // 初始化时更新购物车数量
+        updateCartCount();
+
+        // 从localStorage获取订单数据
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const ordersList = document.querySelector('.orders-list');
+        
+        // 如果没有订单，显示空状态
+        if (orders.length === 0) {
+            ordersList.innerHTML = `
+                <div class="empty-orders">
+                    <div class="empty-orders-icon">📋</div>
+                    <h2 class="empty-orders-message">您没有任何订单</h2>
+                    <p class="empty-orders-submessage">浏览我们的商店，发现更多精彩游戏。</p>
+                    <a href="index.html" class="btn">浏览游戏</a>
+                </div>
+            `;
+            return;
+        }
+        
+        // 渲染订单列表
+        ordersList.innerHTML = orders.map(order => `
+            <div class="order-card" data-status="${order.status}">
+                <div class="order-header">
+                    <div>
+                        <div class="order-date">${order.date}</div>
+                        <div class="order-id">订单号: #${order.id}</div>
+                    </div>
+                    <span class="order-status status-${order.status}">${order.status === 'completed' ? '已完成' : order.status}</span>
+                </div>
+                <div class="order-content">
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <div class="order-item-img">
+                                    <img src="${item.cover_image}" alt="${item.title}">
+                                </div>
+                                <div class="order-item-info">
+                                    <h3 class="order-item-title">${item.title}</h3>
+                                    <div class="order-item-meta">${item.genres.join('，')}</div>
+                                    <div class="order-item-price">$${item.price}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <div class="summary-label">小计</div>
+                            <div class="summary-value">$${order.subtotal}</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">折扣</div>
+                            <div class="summary-value">-$0.00</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">税</div>
+                            <div class="summary-value">$${order.tax}</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">总计</div>
+                            <div class="summary-value">$${order.total}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn btn-danger delete-btn" data-order="${order.id}">删除订单</button>
+                        <button class="btn btn-outline download-btn" data-order="${order.id}">下载游戏</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // 订单过滤
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const orderCards = document.querySelectorAll('.order-card');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // 给当前点击的按钮添加active类
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-filter');
+                
+                // 显示或隐藏订单卡片
+                orderCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-status') === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // 检查是否有可见的订单卡片
+                checkEmptyOrders();
+            });
+        });
+        
+        // 下载游戏按钮
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('download-btn')) {
+                const orderId = e.target.getAttribute('data-order');
+                
+                // 显示成功消息
+                const successMessage = document.getElementById('successMessage');
+                successMessage.textContent = '游戏下载已开始，请检查您的下载文件夹。';
+                successMessage.classList.add('show');
+                
+                // 滚动到顶部显示消息
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 3秒后隐藏成功消息
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 删除订单按钮
+            if (e.target && e.target.classList.contains('delete-btn')) {
+                const orderId = e.target.getAttribute('data-order');
+                const orderCard = e.target.closest('.order-card');
+                
+                // 添加删除动画
+                orderCard.style.opacity = '0';
+                orderCard.style.transform = 'translateX(-20px)';
+                orderCard.style.transition = 'all 0.3s ease';
+                
+                // 从localStorage中删除订单
+                setTimeout(() => {
+                    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                    const updatedOrders = orders.filter(order => order.id !== orderId);
+                    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+                    
+                    // 移除订单卡片
+                    orderCard.remove();
+                    
+                    // 显示成功消息
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.textContent = '订单已成功删除！';
+                    successMessage.classList.add('show');
+                    
+                    // 滚动到顶部显示消息
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    // 3秒后隐藏成功消息
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 3000);
+                    
+                    // 检查是否还有订单
+                    const remainingOrders = document.querySelectorAll('.order-card');
+                    if (remainingOrders.length === 0) {
+                        const ordersList = document.querySelector('.orders-list');
+                        ordersList.innerHTML = `
+                            <div class="empty-orders">
+                                <div class="empty-orders-icon">📋</div>
+                                <h2 class="empty-orders-message">您没有任何订单</h2>
+                                <p class="empty-orders-submessage">浏览我们的商店，发现更多精彩游戏。</p>
+                                <a href="index.html" class="btn">浏览游戏</a>
+                            </div>
+                        `;
+                    }
+                }, 300);
+            }
+        });
+        
+        // 辅助函数
+        function checkEmptyOrders() {
+            const visibleOrders = document.querySelectorAll('.order-card[style="display: block"]');
+            
+            if (visibleOrders.length === 0) {
+                const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+                let message = '您没有任何订单';
+                
+                if (activeFilter === 'pending') {
+                    message = '您没有待付款的订单';
+                } else if (activeFilter === 'completed') {
+                    message = '您没有已完成的订单';
+                } else if (activeFilter === 'cancelled') {
+                    message = '您没有已取消的订单';
+                }
+                
+                ordersList.innerHTML = `
+                    <div class="empty-orders">
+                        <div class="empty-orders-icon">📋</div>
+                        <h2 class="empty-orders-message">${message}</h2>
+                        <p class="empty-orders-submessage">浏览我们的商店，发现更多精彩游戏。</p>
+                        <a href="index.html" class="btn">浏览游戏</a>
+                    </div>
+                `;
+            }
+        }
+    });
+</script>
+</body>
+</html>

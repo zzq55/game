@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区论坛 - 游戏中心</title>
+    <style>
+        :root {
+            --primary: #1a2030;
+            --secondary: #1e293b;
+            --accent: #66c0f4;
+            --accent-hover: #1a9fff;
+            --text: #f9fafb;
+            --text-secondary: #94a3b8;
+            --card-bg: #171e2e;
+            --card-hover: #202a3c;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--secondary);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-bar input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            color: var(--text);
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+            width: 250px;
+        }
+
+        .search-bar::before {
+            content: '🔍';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Community Container */
+        .community-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Community Header */
+        .community-header {
+            margin-bottom: 2rem;
+        }
+
+        .community-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .community-subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* Community Layout */
+        .community-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        /* Forum Categories */
+        .forum-categories {
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-header {
+            background-color: rgba(102, 192, 244, 0.1);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .category-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .category-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .category-topics {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topic-item {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-item:hover {
+            background-color: var(--card-hover);
+        }
+
+        .topic-icon {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .topic-info {
+            flex: 1;
+        }
+
+        .topic-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .topic-title a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .topic-title a:hover {
+            color: var(--accent);
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .topic-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .stats-number {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .stats-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .topic-last-post {
+            min-width: 200px;
+        }
+
+        .last-post-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .last-post-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .last-post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .last-post-details {
+            font-size: 0.85rem;
+        }
+
+        .last-post-user {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .last-post-time {
+            color: var(--text-secondary);
+        }
+
+        /* Discussion Threads */
+        .discussion-threads {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .thread-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .thread-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .thread-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .thread-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .thread-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thread-info {
+            flex: 1;
+        }
+
+        .thread-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .thread-title a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .thread-title a:hover {
+            color: var(--accent);
+        }
+
+        .thread-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .thread-author {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .thread-category {
+            display: inline-block;
+            background-color: rgba(102, 192, 244, 0.1);
+            color: var(--accent);
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .thread-content {
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .thread-actions {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background-color: transparent;
+            border: none;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .action-btn:hover {
+            color: var(--accent);
+        }
+
+        .action-count {
+            font-weight: 500;
+        }
+
+        .thread-engagement {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Community Sidebar */
+        .community-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        /* Create Post */
+        .create-post {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .create-post-btn {
+            width: 100%;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Community Stats */
+        .community-stats {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Active Users */
+        .active-users {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-name a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .user-name a:hover {
+            color: var(--accent);
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+
+        .status-indicator.away {
+            background-color: var(--warning);
+        }
+
+        /* Community Rules */
+        .community-rules {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .rules-list {
+            list-style-position: inside;
+            color: var(--text-secondary);
+        }
+
+        .rules-list li {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .rules-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            border: none;
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .page-arrow {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary);
+            padding: 4rem 2rem 2rem;
+            color: var(--text-secondary);
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .footer-about p {
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent);
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease, padding-left 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .community-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .community-sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .topic-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .topic-stats {
+                flex-direction: row;
+                gap: 1rem;
+                min-width: auto;
+            }
+
+            .topic-last-post {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .thread-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .thread-actions {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">游</div>
+                游戏中心
+            </a>
+            <div class="nav-links">
+                <a href="index.html">商店</a>
+                <a href="library.html">我的游戏库</a>
+                <a href="profile.html">个人资料</a>
+                <a href="wishlist.html">愿望单</a>
+                <a href="community.html" class="active">社区</a>
+                <a href="news.html">新闻</a>
+                <a href="order-page.html">订单</a>
+            </div>
+            <div class="user-actions">
+                <form id="header-search-form" action="search-results.html" method="GET">
+                    <div class="search-bar">
+                        <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                    </div>
+                </form>
+                <a href="cart.html" class="btn">购物车 (3)</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Community Container -->
+    <div class="community-container">
+        <div class="community-header">
+            <h1 class="community-title">社区论坛</h1>
+            <p class="community-subtitle">加入讨论，分享您的游戏体验，并与其他玩家互动</p>
+        </div>
+
+        <!-- Community Layout -->
+        <div class="community-layout">
+            <!-- Main Content -->
+            <div class="community-main">
+                <!-- Forum Categories -->
+                <div class="forum-categories">
+                    <!-- General Discussion Category -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">💬</div>
+                            <div class="category-info">
+                                <h3 class="category-title">综合讨论</h3>
+                                <p class="category-description">讨论与游戏、硬件以及 GameHub 平台相关的任何内容</p>
+                            </div>
+                            <div class="category-stats">
+                                <span>主题：1,245</span>
+                                <span>帖子：8,932</span>
+                            </div>
+                        </div>
+                        <div class="category-topics">
+                            <!-- Topic 1 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">📌</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">欢迎来到 GameHub 社区 - 请先阅读！</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">管理员</a> 发起</span>
+                                        <span>置顶</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">142</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">玩家X</a></div>
+                                            <div class="last-post-time">今天，上午 10:23</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Topic 2 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">🔥</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">这个周末你们在玩什么游戏？</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">游戏爱好者42</a> 发起</span>
+                                        <span>热门话题</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">87</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">角色扮演爱好者</a></div>
+                                            <div class="last-post-time">昨天，晚上 8:45</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Topic 3 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">💻</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">2025 年最佳预算游戏电脑配置</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">科技达人</a> 发起</span>
+                                        <span>3 天前</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">56</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">电脑大师</a></div>
+                                            <div class="last-post-time">今天，凌晨 2:15</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Specific Category -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">🎮</div>
+                            <div class="category-info">
+                                <h3 class="category-title">游戏特定讨论</h3>
+                                <p class="category-description">特定游戏的论坛，包括攻略和指南</p>
+                            </div>
+                            <div class="category-stats">
+                                <span>主题：3,782</span>
+                                <span>帖子：24,561</span>
+                            </div>
+                        </div>
+                        <div class="category-topics">
+                            <!-- Topic 1 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">🏆</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">《赛博奥德赛 2077》：新手攻略与技巧</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">夜之城探险家</a> 发起</span>
+                                        <span>攻略</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">124</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">赛博新手</a></div>
+                                            <div class="last-post-time">今天，上午 9:12</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Topic 2 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">⚔️</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">《神秘传说》：最佳角色构建</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">传奇法师</a> 发起</span>
+                                        <span>策略</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">93</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">屠龙者</a></div>
+                                            <div class="last-post-time">昨天，下午 4:30</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Topic 3 -->
+                            <div class="topic-item">
+                                <div class="topic-icon">🚀</div>
+                                <div class="topic-info">
+                                    <h4 class="topic-title"><a href="#">《星际边境》：联盟招募贴</a></h4>
+                                    <div class="topic-meta">
+                                        <span>由 <a href="#">太空指挥官</a> 发起</span>
+                                        <span>招募</span>
+                                    </div>
+                                </div>
+                                <div class="topic-stats">
+                                    <div class="stats-number">78</div>
+                                    <div class="stats-label">回复</div>
+                                </div>
+                                <div class="topic-last-post">
+                                    <div class="last-post-info">
+                                        <div class="last-post-avatar">
+                                            <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                        </div>
+                                        <div class="last-post-details">
+                                            <div>由 <a href="#" class="last-post-user">银河探险家</a></div>
+                                            <div class="last-post-time">今天，上午 7:45</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            <!-- Technical Support Category -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🔧</div>
+                    <div class="category-info">
+                        <h3 class="category-title">技术支持</h3>
+                        <p class="category-description">获取技术支持，解决技术问题、漏洞和故障排除</p>
+                    </div>
+                    <div class="category-stats">
+                        <span>主题：942</span>
+                        <span>帖子：5,128</span>
+                    </div>
+                </div>
+                <div class="category-topics">
+                    <!-- Topic 1 -->
+                    <div class="topic-item">
+                        <div class="topic-icon">📋</div>
+                        <div class="topic-info">
+                            <h4 class="topic-title"><a href="#">常见问题与解决方案 - 请先阅读</a></h4>
+                            <div class="topic-meta">
+                                <span>由 <a href="#">技术支持</a> 发起</span>
+                                <span>置顶</span>
+                            </div>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stats-number">--</div>
+                            <div class="stats-label">锁定</div>
+                        </div>
+                        <div class="topic-last-post">
+                            <div class="last-post-info">
+                                <div class="last-post-avatar">
+                                    <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                </div>
+                                <div class="last-post-details">
+                                    <div>由 <a href="#" class="last-post-user">管理员</a></div>
+                                    <div class="last-post-time">2 天前更新</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Topic 2 -->
+                    <div class="topic-item">
+                        <div class="topic-icon">🖥️</div>
+                        <div class="topic-info">
+                            <h4 class="topic-title"><a href="#">游戏在最新更新后崩溃 - 求助！</a></h4>
+                            <div class="topic-meta">
+                                <span>由 <a href="#">沮丧的玩家</a> 发起</span>
+                                <span>紧急</span>
+                            </div>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stats-number">32</div>
+                            <div class="stats-label">回复</div>
+                        </div>
+                        <div class="topic-last-post">
+                            <div class="last-post-info">
+                                <div class="last-post-avatar">
+                                    <img src="/placeholder.svg?height=30&width=30" alt="用户头像">
+                                </div>
+                                <div class="last-post-details">
+                                    <div>由 <a href="#" class="last-post-user">科技达人</a></div>
+                                    <div class="last-post-time">今天，上午 11:30</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Recent Discussions -->
+        <div class="discussion-threads">
+            <div class="section-header">
+                <h2 class="section-title">最近的讨论</h2>
+                <div class="section-actions">
+                    <select class="form-input">
+                        <option>最新发布</option>
+                        <option>最受欢迎</option>
+                        <option>最多回复</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Thread 1 -->
+            <div class="thread-card">
+                <div class="thread-header">
+                    <div class="thread-avatar">
+                        <img src="/placeholder.svg?height=50&width=50" alt="用户头像">
+                    </div>
+                    <div class="thread-info">
+                        <h3 class="thread-title"><a href="#">刚刚完成了《赛博奥德赛 2077》，简直令人震撼！</a></h3>
+                        <div class="thread-meta">
+                            <span>由 <a href="#" class="thread-author">夜之城探险家</a> 发布</span>
+                            <span>2 小时前</span>
+                            <span class="thread-category">游戏讨论</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="thread-content">
+                    <p>经过 120 多个小时，我终于完成了《赛博奥德赛 2077》的主线故事和所有支线任务。我必须说，这款游戏拥有我体验过的最沉浸式的世界和最引人入胜的故事。角色发展，尤其是 V 和 Johnny，令人难以置信。</p>
+                    <p>你们觉得结局如何？不剧透，但我选择了"星辰"路径，觉得非常令人满意。还有人尝试过其他结局吗？</p>
+                </div>
+                <div class="thread-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            👍 <span class="action-count">42</span>
+                        </button>
+                        <button class="action-btn">
+                            💬 <span class="action-count">18</span>
+                        </button>
+                        <button class="action-btn">
+                            🔖 收藏
+                        </button>
+                        <button class="action-btn">
+                            🔗 分享
+                        </button>
+                    </div>
+                    <div class="thread-engagement">
+                        <span>18 条评论</span>
+                        <span>42 个赞</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thread 2 -->
+            <div class="thread-card">
+                <div class="thread-header">
+                    <div class="thread-avatar">
+                        <img src="/placeholder.svg?height=50&width=50" alt="用户头像">
+                    </div>
+                    <div class="thread-info">
+                        <h3 class="thread-title"><a href="#">2025 年值得关注的独立游戏</a></h3>
+                        <div class="thread-meta">
+                            <span>由 <a href="#" class="thread-author">独立游戏爱好者</a> 发布</span>
+                            <span>昨天</span>
+                            <span class="thread-category">独立游戏</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="thread-content">
+                    <p>我一直在关注几位独立游戏开发者，想分享一些 2025 年可能被忽视的令人兴奋的独立游戏：</p>
+                    <p>1.《永恒回响》 - 一部手绘风格的元游戏，带有时间操控机制</p>
+                    <p>2.《像素先锋》 - 一款具有独特艺术风格的合作生存建造游戏</p>
+                    <p>3.《星系流浪者》 - 一款带有程序生成星系的太空探索角色扮演游戏</p>
+                    <p>你们期待哪些独立游戏？</p>
+                </div>
+                <div class="thread-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            👍 <span class="action-count">35</span>
+                        </button>
+                        <button class="action-btn">
+                            💬 <span class="action-count">24</span>
+                        </button>
+                        <button class="action-btn">
+                            🔖 收藏
+                        </button>
+                        <button class="action-btn">
+                            🔗 分享
+                        </button>
+                    </div>
+                    <div class="thread-engagement">
+                        <span>24 条评论</span>
+                        <span>35 个赞</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn page-arrow">◀</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">...</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn page-arrow">▶</button>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="community-sidebar">
+        <!-- Create Post -->
+        <div class="create-post">
+            <h3 class="sidebar-title">发起讨论</h3>
+            <button class="btn create-post-btn">
+                ✏️ 创建新帖子
+            </button>
+        </div>
+    
+        <!-- Community Stats -->
+        <div class="community-stats">
+            <h3 class="sidebar-title">社区统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">15.4K</div>
+                    <div class="stat-label">成员</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1.2K</div>
+                    <div class="stat-label">在线</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">5.9K</div>
+                    <div class="stat-label">主题</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">38.7K</div>
+                    <div class="stat-label">帖子</div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Active Users -->
+        <div class="active-users">
+            <h3 class="sidebar-title">活跃用户</h3>
+            <div class="user-list">
+                <!-- User 1 -->
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="用户头像">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><a href="#">游戏大师</a></div>
+                        <div class="user-status">
+                            <span class="status-indicator"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User 2 -->
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="用户头像">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><a href="#">角色扮演爱好者</a></div>
+                        <div class="user-status">
+                            <span class="status-indicator"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User 3 -->
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="用户头像">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><a href="#">科技达人</a></div>
+                        <div class="user-status">
+                            <span class="status-indicator away"></span>
+                            <span>离开</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User 4 -->
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="用户头像">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><a href="#">夜之城探险家</a></div>
+                        <div class="user-status">
+                            <span class="status-indicator"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User 5 -->
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="用户头像">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><a href="#">独立游戏爱好者</a></div>
+                        <div class="user-status">
+                            <span class="status-indicator"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Community Rules -->
+        <div class="community-rules">
+            <h3 class="sidebar-title">社区规则</h3>
+            <ol class="rules-list">
+                <li>尊重其他社区成员</li>
+                <li>禁止垃圾邮件、自我推广或过度发帖</li>
+                <li>保持讨论与游戏和平台相关</li>
+                <li>禁止讨论盗版、作弊或漏洞利用</li>
+                <li>使用适当语言，避免发布冒犯性内容</li>
+                <li>报告问题，而不是参与争吵</li>
+                <li>享受游戏，成为社区的一员！</li>
+            </ol>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <a href="index.html" class="footer-logo">游戏中心</a>
+                <p>您的终极游戏目的地。在我们的高级游戏平台上发现、玩游戏并与全球玩家连接。</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">ig</a>
+                </div>
+            </div>
+            
+            <div class="footer-links-section">
+                <h3 class="footer-title">快速链接</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="search-results.html">浏览游戏</a></li>
+                    <li><a href="wishlist.html">愿望单</a></li>
+                    <li><a href="cart.html">购物车</a></li>
+                    <li><a href="library.html">游戏库</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-section">
+                <h3 class="footer-title">支持</h3>
+                <ul class="footer-links">
+                    <li><a href="#">帮助中心</a></li>
+                    <li><a href="community.html">社区</a></li>
+                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#">系统状态</a></li>
+                    <li><a href="#">开发者API</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-section">
+                <h3 class="footer-title">法律</h3>
+                <ul class="footer-links">
+                    <li><a href="#">服务条款</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                    <li><a href="#">退款政策</a></li>
+                    <li><a href="#">Cookie政策</a></li>
+                    <li><a href="#">用户协议</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 游戏中心。保留所有权利。</p>
+            <div class="footer-nav">
+                <a href="#">隐私</a>
+                <a href="#">条款</a>
+                <a href="#">Cookies</a>
+                <a href="login.html">设置</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取搜索输入框和表单
+            const headerSearchForm = document.getElementById('header-search-form');
+            const headerSearchInput = document.getElementById('header-search-input');
+            
+            // 处理头部搜索表单提交
+            headerSearchForm.addEventListener('submit', function(e) {
+                if (headerSearchInput.value.trim() === '') {
+                    e.preventDefault(); // 如果搜索词为空，阻止表单提交
+                }
+            });
+
+            // Category card hover effects
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                });
+            });
+
+            // Thread card hover effects
+            const threadCards = document.querySelectorAll('.thread-card');
+            threadCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                });
+            });
+
+            // Like button functionality
+            const likeButtons = document.querySelectorAll('.action-btn:first-child');
+            likeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const countElement = btn.querySelector('.action-count');
+                    let count = parseInt(countElement.textContent);
+
+                    if (btn.classList.contains('liked')) {
+                        count--;
+                        countElement.textContent = count;
+                        btn.classList.remove('liked');
+                        btn.style.color = '';
+                    } else {
+                        count++;
+                        countElement.textContent = count;
+                        btn.classList.add('liked');
+                        btn.style.color = 'var(--accent)';
+                    }
+
+                    // Update the engagement count
+                    const engagementElement = btn.closest('.thread-actions').querySelector('.thread-engagement span:last-child');
+                    engagementElement.textContent = `${count} likes`;
+                });
+            });
+
+            // Create post button
+            const createPostBtn = document.querySelector('.create-post-btn');
+            createPostBtn.addEventListener('click', () => {
+                alert('Create a new post functionality would open a form here');
+            });
+
+            // Pagination functionality
+            const pageButtons = document.querySelectorAll('.pagination .page-btn');
+            pageButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.classList.contains('page-arrow')) {
+                        pageButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        // Simulate page loading
+                        const discussionThreads = document.querySelector('.discussion-threads');
+                        discussionThreads.style.opacity = '0.5';
+
+                        setTimeout(() => {
+                            discussionThreads.style.opacity = '1';
+                            window.scrollTo({
+                                top: document.querySelector('.community-header').offsetTop,
+                                behavior: 'smooth'
+                            });
+                        }, 500);
+                    }
+                });
+            });
+
+            // Topic item click to view topic
+            const topicItems = document.querySelectorAll('.topic-item');
+            topicItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('a')) {
+                        const topicTitle = item.querySelector('.topic-title a').textContent;
+                        alert(`Viewing topic: ${topicTitle}`);
+                    }
+                });
+            });
+
+            // 更新购物车数量显示
+            function updateCartCount() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+                const cartButton = document.querySelector('.user-actions .btn');
+                if (cartButton) {
+                    cartButton.textContent = `购物车 (${totalItems})`;
+                }
+            }
+
+            // 页面加载时初始化购物车数量
+            updateCartCount();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏库 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* 页头和导航 */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after, .nav-links a.active::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* 游戏库容器 */
+    .library-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* 游戏库头部 */
+    .library-header {
+        margin-bottom: 2rem;
+    }
+
+    .library-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .library-subtitle {
+        color: var(--text-secondary);
+    }
+
+    /* 游戏库控制 */
+    .library-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .library-search {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .library-search input {
+        width: 100%;
+        background-color: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        color: var(--text);
+        font-size: 1rem;
+    }
+
+    .library-search input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .library-search::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .view-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .view-btn {
+        background-color: var(--card-bg);
+        border: none;
+        color: var(--text-secondary);
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .view-btn.active, .view-btn:hover {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    .filter-controls {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-dropdown {
+        position: relative;
+    }
+
+    .filter-btn {
+        background-color: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--accent);
+    }
+
+    .filter-btn::after {
+        content: '▼';
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .filter-dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--card-bg);
+        border-radius: 4px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        min-width: 180px;
+        z-index: 10;
+        display: none;
+    }
+
+    .filter-dropdown-content.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .filter-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-option:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .filter-option.active {
+        color: var(--accent);
+    }
+
+    /* 游戏库网格 */
+    .library-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .library-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .game-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .game-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-hover);
+    }
+
+    .game-card.list-view {
+        display: flex;
+        height: 120px;
+    }
+
+    .game-img {
+        height: 150px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .game-card:hover .game-img {
+        transform: scale(1.05);
+    }
+
+    .game-card.list-view .game-img {
+        width: 200px;
+        height: 100%;
+    }
+
+    .game-info {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .game-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .game-hours {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .game-last-played {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-progress {
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: auto;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: var(--accent);
+    }
+
+    .game-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .game-btn {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        flex: 1;
+        text-align: center;
+        backdrop-filter: blur(2px);
+    }
+
+    .game-btn:hover {
+        background-color: rgba(102, 192, 244, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .game-card:not(.list-view) .game-actions {
+        display: flex;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+    }
+
+    .game-card:hover:not(.list-view) .game-actions {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    /* 空游戏库 */
+    .empty-library {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 4rem 2rem;
+        text-align: center;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-message {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* 最近活动 */
+    .recent-activity {
+        margin-top: 4rem;
+    }
+
+    .activity-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .activity-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .activity-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .activity-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .activity-game-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .activity-game-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .activity-game-info {
+        flex: 1;
+    }
+
+    .activity-game-title {
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .activity-content {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .activity-achievement {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: rgba(102, 192, 244, 0.1);
+        padding: 0.75rem;
+        border-radius: 4px;
+    }
+
+    .achievement-icon {
+        width: 30px;
+        height: 30px;
+        background-color: var(--accent);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .achievement-info {
+        flex: 1;
+    }
+
+    .achievement-name {
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+    }
+
+    .achievement-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    /* 统计信息部分 */
+    .stats-section {
+        margin-top: 4rem;
+    }
+
+    .stats-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+    }
+
+    /* 页脚 */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* 响应式 */
+    @media (max-width: 992px) {
+        .library-controls {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .library-search {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .filter-controls {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .game-card.list-view {
+            flex-direction: column;
+            height: auto;
+        }
+
+        .game-card.list-view .game-img {
+            width: 100%;
+            height: 150px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .library-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- 页头和导航 -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">G</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+                <a href="library.html" class="active">我的游戏库</a>
+                <a href="profile.html">个人资料</a>
+                <a href="wishlist.html">愿望单</a>
+                <a href="community.html">社区</a>
+                <a href="news.html">新闻</a>
+                <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- 游戏库容器 -->
+<div class="library-container">
+    <!-- 未登录提示 -->
+    <div id="not-logged-in" style="text-align: center; padding: 5rem 2rem; display: none;">
+        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.5;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--text);">用户您还未登录</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            请先登录以查看您的游戏库、游戏统计和最近活动。
+        </p>
+        <a href="login.html" class="btn" style="font-size: 1.1rem; padding: 0.75rem 2rem;">前往登录</a>
+    </div>
+
+    <!-- 登录后显示的内容 -->
+    <div id="library-content" style="display: none;">
+        <div class="library-header">
+            <h1 class="library-title">您的游戏库</h1>
+            <p class="library-subtitle" id="gameCount">加载中...</p>
+        </div>
+
+        <!-- 游戏库控制 -->
+        <div class="library-controls">
+            <div class="library-search">
+                <input type="text" placeholder="搜索您的游戏库...">
+            </div>
+            
+            <div class="filter-controls">
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="sortBtn">排序：最近</button>
+                    <div class="filter-dropdown-content" id="sortDropdown">
+                        <div class="filter-option active">最近</div>
+                        <div class="filter-option">名称（A-Z）</div>
+                        <div class="filter-option">名称（Z-A）</div>
+                        <div class="filter-option">游玩最多</div>
+                        <div class="filter-option">最后游玩</div>
+                    </div>
+                </div>
+                
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="genreBtn">类型：全部</button>
+                    <div class="filter-dropdown-content" id="genreDropdown">
+                        <div class="filter-option active">全部</div>
+                        <div class="filter-option">动作</div>
+                        <div class="filter-option">冒险</div>
+                        <div class="filter-option">角色扮演</div>
+                        <div class="filter-option">策略</div>
+                        <div class="filter-option">模拟</div>
+                        <div class="filter-option">体育</div>
+                    </div>
+                </div>
+                
+                <div class="view-controls">
+                    <button class="view-btn active" id="gridViewBtn">□</button>
+                    <button class="view-btn" id="listViewBtn">☰</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏库网格 -->
+        <div class="library-grid" id="libraryContainer">
+            <!-- 游戏卡片将由JavaScript动态加载 -->
+            <div class="loading-message">正在加载游戏库数据...</div>
+        </div>
+
+        <!-- 最近活动 -->
+        <div class="recent-activity">
+            <h2 class="activity-title">最近活动</h2>
+            <div class="activity-grid">
+                <!-- 活动 1 -->
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <div class="activity-game-img">
+                            <img src="/placeholder.svg?height=60&width=60" alt="游戏图片">
+                        </div>
+                        <div class="activity-game-info">
+                            <div class="activity-game-title">赛博奥德赛2077</div>
+                            <div class="activity-time">2小时前</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        您解锁了一个新成就：
+                    </div>
+                    <div class="activity-achievement">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-info">
+                            <div class="achievement-name">黑客高手</div>
+                            <div class="achievement-desc">破解50个安全系统</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 活动 2 -->
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <div class="activity-game-img">
+                            <img src="/placeholder.svg?height=60&width=60" alt="游戏图片">
+                        </div>
+                        <div class="activity-game-info">
+                            <div class="activity-game-title">星际前线</div>
+                            <div class="activity-time">昨天</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        您游玩了3小时并达到25级。您的舰队现在有12艘船。
+                    </div>
+                </div>
+                
+                <!-- 活动 3 -->
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <div class="activity-game-img">
+                            <img src="/placeholder.svg?height=60&width=60" alt="游戏图片">
+                        </div>
+                        <div class="activity-game-info">
+                            <div class="activity-game-title">极速冲刺</div>
+                            <div class="activity-time">3天前</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        您解锁了一个新成就：
+                    </div>
+                    <div class="activity-achievement">
+                        <div class="achievement-icon">🌟</div>
+                        <div class="achievement-info">
+                            <div class="achievement-name">完美赛车手</div>
+                            <div class="achievement-desc">赢得所有比赛并获得3星</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计信息部分 -->
+        <div class="stats-section">
+            <h2 class="stats-title">您的游戏统计信息</h2>
+            <div class="stats-grid">
+                <!-- 统计 1 -->
+                <div class="stat-card">
+                    <div class="stat-value">2,456</div>
+                    <div class="stat-label">总游玩小时数</div>
+                </div>
+                
+                <!-- 统计 2 -->
+                <div class="stat-card">
+                    <div class="stat-value" id="totalGames">...</div>
+                    <div class="stat-label">拥有游戏数</div>
+                </div>
+                
+                <!-- 统计 3 -->
+                <div class="stat-card">
+                    <div class="stat-value">187</div>
+                    <div class="stat-label">解锁成就数</div>
+                </div>
+                
+                <!-- 统计 4 -->
+                <div class="stat-card">
+                    <div class="stat-value">78%</div>
+                    <div class="stat-label">平均完成率</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">游戏中心</a>
+            <p>您的终极游戏目的地。在我们的高级游戏平台上发现、游玩并与全球玩家连接。</p>
+            <div class="social-links">
+                <a href="#" class="social-icon">f</a>
+                <a href="#" class="social-icon">t</a>
+                <a href="#" class="social-icon">in</a>
+                <a href="#" class="social-icon">ig</a>
+            </div>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">快速链接</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="#">浏览游戏</a></li>
+                <li><a href="#">类别</a></li>
+                <li><a href="#">优惠与促销</a></li>
+                <li><a href="#">礼品卡</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">支持</h3>
+            <ul class="footer-links">
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="community.html">社区</a></li>
+                <li><a href="#">联系我们</a></li>
+                <li><a href="#">系统状态</a></li>
+                <li><a href="#">开发者API</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">法律</h3>
+            <ul class="footer-links">
+                <li><a href="#">服务条款</a></li>
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">退款政策</a></li>
+                <li><a href="#">Cookie政策</a></li>
+                <li><a href="#">用户协议</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p class="copyright">© 2025 游戏中心。版权所有。</p>
+        <div class="footer-nav">
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+            <a href="#">Cookie</a>
+            <a href="#">设置</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查用户是否已登录
+        function checkLoginStatus() {
+            // 通过localStorage检查登录状态
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // 获取页面元素
+            const notLoggedInDiv = document.getElementById('not-logged-in');
+            const libraryContentDiv = document.getElementById('library-content');
+            
+            // 根据登录状态显示对应内容
+            if (isLoggedIn) {
+                notLoggedInDiv.style.display = 'none';
+                libraryContentDiv.style.display = 'block';
+                // 加载游戏库数据
+                loadLibraryData();
+            } else {
+                notLoggedInDiv.style.display = 'block';
+                libraryContentDiv.style.display = 'none';
+            }
+        }
+
+        // 加载游戏库数据的函数
+        function loadLibraryData() {
+            // 加载游戏数据
+            fetch('games.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应不正常');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 成功获取数据后，渲染游戏库
+                    renderLibrary(data.games);
+                    updateGameCount(data.games.length);
+                })
+                .catch(error => {
+                    console.error('获取游戏数据失败:', error);
+                    document.getElementById('libraryContainer').innerHTML = `
+                        <div class="empty-library">
+                            <div class="empty-icon">⚠️</div>
+                            <h2 class="empty-title">加载游戏数据失败</h2>
+                            <p class="empty-message">无法获取您的游戏库数据。请检查网络连接或稍后再试。</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // 页面加载时检查登录状态
+        checkLoginStatus();
+
+        // 更新游戏数量显示
+        function updateGameCount(count) {
+            document.getElementById('gameCount').textContent = `您的收藏中有 ${count} 款游戏`;
+            document.getElementById('totalGames').textContent = count;
+        }
+
+        // 渲染游戏库
+        function renderLibrary(games) {
+            const libraryContainer = document.getElementById('libraryContainer');
+            libraryContainer.innerHTML = '';
+
+            // 为每个游戏创建随机的游戏时间和进度
+            games.forEach(game => {
+                const hours = Math.floor(Math.random() * 200) + 1;
+                const progress = Math.floor(Math.random() * 100);
+                const lastPlayed = getRandomLastPlayed();
+
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                
+                // 使用真实游戏封面图或占位图
+                const coverImage = game.cover_image || '/placeholder.svg?height=150&width=280';
+                
+                gameCard.innerHTML = `
+                    <img src="${coverImage}" alt="${game.title}" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">${game.title}</h3>
+                        <div class="game-meta">
+                            <span>${game.genres.slice(0, 2).join('，')}</span>
+                            <span class="game-hours">${hours} 小时</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：${lastPlayed}</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="game-actions">
+                            <button class="game-btn play-btn" data-game-id="${game.id}">游玩</button>
+                            <button class="game-btn details-btn" data-game-id="${game.id}">详情</button>
+                        </div>
+                    </div>
+                `;
+                
+                libraryContainer.appendChild(gameCard);
+            });
+
+            // 添加游戏卡片的点击事件
+            setupGameCardEvents();
+        }
+
+        // 设置游戏卡片事件
+        function setupGameCardEvents() {
+            // 游戏卡片点击跳转到详情页
+            const gameCards = document.querySelectorAll('.game-card');
+            gameCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const detailsBtn = this.querySelector('.details-btn');
+                    const gameId = detailsBtn.getAttribute('data-game-id');
+                    window.location.href = `game-detalis.html?id=${gameId}`;
+                });
+            });
+
+            // 详情按钮点击
+            const detailsBtns = document.querySelectorAll('.details-btn');
+            detailsBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    const gameId = this.getAttribute('data-game-id');
+                    window.location.href = `game-detalis.html?id=${gameId}`;
+                });
+            });
+
+            // 游玩按钮点击
+            const playBtns = document.querySelectorAll('.play-btn');
+            playBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    const gameId = this.getAttribute('data-game-id');
+                    
+                    // 模拟游戏启动
+                    this.textContent = '正在启动...';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        alert(`正在启动游戏 ID: ${gameId}。请稍候...`);
+                        this.textContent = '游玩';
+                        this.disabled = false;
+                    }, 1500);
+                });
+            });
+        }
+
+        // 生成随机的最后游玩时间
+        function getRandomLastPlayed() {
+            const options = [
+                '今天',
+                '昨天',
+                '2天前',
+                '3天前',
+                '5天前',
+                '1周前',
+                '2周前',
+                '3周前',
+                '1个月前',
+                '2个月前'
+            ];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        // 下拉菜单切换
+        const sortBtn = document.getElementById('sortBtn');
+        const sortDropdown = document.getElementById('sortDropdown');
+        const genreBtn = document.getElementById('genreBtn');
+        const genreDropdown = document.getElementById('genreDropdown');
+        
+        sortBtn.addEventListener('click', () => {
+            sortDropdown.classList.toggle('show');
+            genreDropdown.classList.remove('show');
+        });
+        
+        genreBtn.addEventListener('click', () => {
+            genreDropdown.classList.toggle('show');
+            sortDropdown.classList.remove('show');
+        });
+        
+        // 点击外部关闭下拉菜单
+        window.addEventListener('click', (e) => {
+            if (!e.target.matches('.filter-btn')) {
+                sortDropdown.classList.remove('show');
+                genreDropdown.classList.remove('show');
+            }
+        });
+        
+        // 排序选项
+        const sortOptions = document.querySelectorAll('#sortDropdown .filter-option');
+        sortOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                sortOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                sortBtn.textContent = '排序：' + option.textContent;
+                sortDropdown.classList.remove('show');
+                
+                // 这里添加实际的排序逻辑
+                // 为了演示，我们只显示一个加载状态
+                const libraryContainer = document.getElementById('libraryContainer');
+                libraryContainer.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    libraryContainer.style.opacity = '1';
+                }, 500);
+            });
+        });
+        
+        // 类型选项
+        const genreOptions = document.querySelectorAll('#genreDropdown .filter-option');
+        genreOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                genreOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                genreBtn.textContent = '类型：' + option.textContent;
+                genreDropdown.classList.remove('show');
+                
+                // 这里添加实际的筛选逻辑
+                // 为了演示，我们只显示一个加载状态
+                const libraryContainer = document.getElementById('libraryContainer');
+                libraryContainer.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    libraryContainer.style.opacity = '1';
+                }, 500);
+            });
+        });
+        
+        // 视图切换
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const libraryContainer = document.getElementById('libraryContainer');
+        
+        gridViewBtn.addEventListener('click', () => {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            libraryContainer.className = 'library-grid';
+            
+            const gameCards = document.querySelectorAll('.game-card');
+            gameCards.forEach(card => {
+                card.classList.remove('list-view');
+            });
+        });
+        
+        listViewBtn.addEventListener('click', () => {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            libraryContainer.className = 'library-list';
+            
+            const gameCards = document.querySelectorAll('.game-card');
+            gameCards.forEach(card => {
+                card.classList.add('list-view');
+            });
+        });
+        
+        // 搜索功能
+        const searchInput = document.querySelector('.library-search input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            gameCards.forEach(card => {
+                const gameTitle = card.querySelector('.game-title').textContent.toLowerCase();
+                const gameGenre = card.querySelector('.game-meta span').textContent.toLowerCase();
+                
+                if (gameTitle.includes(searchTerm) || gameGenre.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const cartButton = document.querySelector('.user-actions .btn');
+            if (cartButton) {
+                cartButton.textContent = `购物车 (${totalItems})`;
+            }
+        }
+
+        // 页面加载时初始化购物车数量
+        updateCartCount();
+    });
+</script>
+
+</body>
+</html>

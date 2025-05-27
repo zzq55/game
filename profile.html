@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户资料 - 游戏中心</title>
+<style>
+    :root {
+        --primary: #1a2030;
+        --secondary: #1e293b;
+        --accent: #66c0f4;
+        --accent-hover: #1a9fff;
+        --text: #f9fafb;
+        --text-secondary: #94a3b8;
+        --card-bg: #171e2e;
+        --card-hover: #202a3c;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+    }
+
+    /* 页头和导航 */
+    header {
+        background-color: var(--secondary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background-color: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover {
+        color: var(--accent);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: var(--text);
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.15);
+        width: 250px;
+    }
+
+    .search-bar::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* 用户资料容器 */
+    .profile-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* 用户资料头部 */
+    .profile-header {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .profile-avatar {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid var(--accent);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-name {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-username {
+        color: var(--accent);
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .profile-bio {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+    }
+
+    .btn-secondary:hover {
+        background-color: rgba(102, 192, 244, 0.1);
+    }
+
+    /* 用户资料标签 */
+    .profile-tabs {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .tab {
+        padding: 1rem 2rem;
+        cursor: pointer;
+        position: relative;
+        color: var(--text-secondary);
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .tab.active {
+        color: var(--accent);
+    }
+
+    .tab::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--accent);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .tab.active::after {
+        transform: scaleX(1);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    /* 游戏库 */
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .game-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .game-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-hover);
+    }
+
+    .game-img {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .game-card:hover .game-img {
+        transform: scale(1.05);
+    }
+
+    .game-info {
+        padding: 1.5rem;
+    }
+
+    .game-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+    }
+
+    .game-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .game-hours {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .game-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .game-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .game-last-played {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-progress {
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: var(--accent);
+    }
+
+    /* 成就 */
+    .achievements-section {
+        margin-bottom: 2rem;
+    }
+
+    .achievements-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .progress-info {
+        background-color: var(--card-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .progress-percentage {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .achievement-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        gap: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .achievement-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .achievement-icon {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(102, 192, 244, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .achievement-info {
+        flex: 1;
+    }
+
+    .achievement-name {
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .achievement-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .achievement-date {
+        color: var(--accent);
+        font-size: 0.8rem;
+    }
+
+    .achievement-locked .achievement-icon {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-secondary);
+    }
+
+    .achievement-locked .achievement-name, 
+    .achievement-locked .achievement-description {
+        color: var(--text-secondary);
+    }
+
+    /* 好友 */
+    .friends-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .friend-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .friend-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .friend-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        overflow: hidden;
+        border: 3px solid var(--accent);
+    }
+
+    .friend-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .friend-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .friend-status {
+        color: #4ade80; /* 在线状态为绿色 */
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .friend-status.offline {
+        color: var(--text-secondary);
+    }
+
+    .friend-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .friend-btn {
+        background-color: rgba(102, 192, 244, 0.1);
+        color: var(--accent);
+        border: none;
+        border-radius: 4px;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .friend-btn:hover {
+        background-color: rgba(102, 192, 244, 0.2);
+    }
+
+    /* 动态消息 */
+    .activity-feed {
+        max-width: 800px;
+    }
+
+    .activity-item {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .activity-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .activity-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .activity-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .activity-user {
+        flex: 1;
+    }
+
+    .activity-username {
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .activity-content {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .activity-game {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .activity-game-img {
+        width: 80px;
+        height: 60px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .activity-game-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .activity-game-info {
+        flex: 1;
+    }
+
+    .activity-game-title {
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+    }
+
+    .activity-game-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .activity-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .activity-action {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .activity-action:hover {
+        color: var(--accent);
+    }
+
+    /* 页脚 */
+    footer {
+        background-color: var(--secondary);
+        padding: 4rem 2rem 2rem;
+        color: var(--text-secondary);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .footer-about p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background-color: var(--accent);
+    }
+
+    .footer-title {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: var(--accent);
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .copyright {
+        font-size: 0.9rem;
+    }
+
+    .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent);
+    }
+
+    /* 响应式 */
+    @media (max-width: 992px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-stats {
+            justify-content: center;
+        }
+
+        .profile-actions {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .tab {
+            padding: 1rem;
+        }
+
+        .games-grid, .achievements-grid, .friends-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .profile-tabs {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab {
+            padding: 1rem 0.75rem;
+        }
+
+        .games-grid, .achievements-grid, .friends-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- 页头和导航 -->
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">G</div>
+            游戏中心
+        </a>
+        <div class="nav-links">
+            <a href="index.html">商店</a>
+                <a href="library.html">我的游戏库</a>
+                <a href="profile.html">个人资料</a>
+                <a href="wishlist.html">愿望单</a>
+                <a href="community.html">社区</a>
+                <a href="news.html">新闻</a>
+                <a href="order-page.html">订单</a>
+        </div>
+        <div class="user-actions">
+            <form id="header-search-form" action="search-results.html" method="GET">
+                <div class="search-bar">
+                    <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                </div>
+            </form>
+            <a href="cart.html" class="btn">购物车 (3)</a>
+        </div>
+    </nav>
+</header>
+
+<!-- 用户资料容器 -->
+<div class="profile-container">
+    <!-- 未登录提示 -->
+    <div id="not-logged-in" style="text-align: center; padding: 5rem 2rem; display: none;">
+        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.5;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--text);">用户您还未登录</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            请先登录以查看您的个人资料、游戏库和成就。
+        </p>
+        <a href="login.html" class="btn" style="font-size: 1.1rem; padding: 0.75rem 2rem;">前往登录</a>
+    </div>
+
+    <!-- 登录后显示的内容 -->
+    <div id="profile-content" style="display: none;">
+        <!-- 用户资料头部 -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img src="/image/头像.jpg" alt="用户头像">
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name">亚历克斯·约翰逊</h1>
+                <div class="profile-username">@gamehunter90</div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">124</div>
+                        <div class="stat-label">游戏</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">57</div>
+                        <div class="stat-label">好友</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">2,456</div>
+                        <div class="stat-label">小时</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">78%</div>
+                        <div class="stat-label">成就</div>
+                    </div>
+                </div>
+                <p class="profile-bio">热爱角色扮演和策略游戏的资深玩家。目前沉迷于《赛博奥德赛2077》，探索新太平洋的每一个角落。</p>
+                <div class="profile-actions">
+                    <a href="srttings.html" class="btn">编辑资料</a>
+                    <button class="btn btn-secondary">查看动态</button>
+                    <button class="btn btn-secondary" id="logout-btn" style="background-color: rgba(255, 99, 71, 0.2); color: #ff6347; border-color: #ff6347;">退出登录</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户资料标签 -->
+        <div class="profile-tabs">
+            <div class="tab active" data-tab="games">游戏库</div>
+            <div class="tab" data-tab="achievements">成就</div>
+            <div class="tab" data-tab="friends">好友</div>
+            <div class="tab" data-tab="activity">动态</div>
+        </div>
+
+        <!-- 游戏库标签 -->
+        <div class="tab-content active" id="games">
+            <div class="games-grid">
+                <!-- 游戏 1 -->
+                <div class="game-card">
+                    <img src="/image/赛博朋克.jpg" alt="赛博奥德赛2077" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">赛博奥德赛2077</h3>
+                        <div class="game-meta">
+                            <span>动作, 角色扮演, 开放世界</span>
+                            <span class="game-hours">87 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">赛博朋克</span>
+                            <span class="tag">角色扮演</span>
+                            <span class="tag">开放世界</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：今天</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏 2 -->
+                <div class="game-card">
+                    <img src="/image/星际前锋.webp" alt="星际前线" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">星际前线</h3>
+                        <div class="game-meta">
+                            <span>策略战棋</span>
+                            <span class="game-hours">45 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">潜行</span>
+                            <span class="tag">黑客</span>
+                            <span class="tag">策略</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：2天前</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏 3 -->
+                <div class="game-card">
+                    <img src="/image/神秘传说.webp" alt="神秘传说" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">神秘传说</h3>
+                        <div class="game-meta">
+                            <span>角色扮演, 冒险, 奇幻</span>
+                            <span class="game-hours">112 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">奇幻</span>
+                            <span class="tag">角色扮演</span>
+                            <span class="tag">冒险</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：5天前</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏 4 -->
+                <div class="game-card">
+                    <img src="/image/黎明杀机.jpg" alt="黎明杀机" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">黎明杀机</h3>
+                        <div class="game-meta">
+                            <span>恐怖, 多人在线, 生存</span>
+                            <span class="game-hours">23 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">恐怖</span>
+                            <span class="tag">生存</span>
+                            <span class="tag">多人在线</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：1周前</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏 5 -->
+                <div class="game-card">
+                    <img src="https://img.3dmgame.com/uploads/allimg/170608/316-1F60QH600.jpg" alt="量子断裂" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">量子断裂</h3>
+                        <div class="game-meta">
+                            <span>动作, 科幻, 第一人称射击</span>
+                            <span class="game-hours">36 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">量子</span>
+                            <span class="tag">科幻</span>
+                            <span class="tag">时间操控</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：2周前</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏 6 -->
+                <div class="game-card">
+                    <img src="https://ts1.tc.mm.bing.net/th/id/R-C.ccbc4b4c53d34fb4380d1c7c827ff524?rik=MwhA5udz7EuCrQ&riu=http%3a%2f%2fcdn.vgn.cn%2fstore%2fapi%2fchihiro%2f00_09_000%2fcontainer%2fHK%2fen%2f999%2fEP1805-CUSA13285_00-ASIA000000000000%2f1596768447000%2fimage&ehk=UPQGKp%2b3mnFxx6kZ6HBy3wjPObG0Cp9H1EqVFlgeqZk%3d&risl=&pid=ImgRaw&r=0" alt="空洞骑士" class="game-img">
+                    <div class="game-info">
+                        <h3 class="game-title">空洞骑士</h3>
+                        <div class="game-meta">
+                            <span>动作冒险, 角色扮演, 平台跳跃</span>
+                            <span class="game-hours">52 小时</span>
+                        </div>
+                        <div class="game-tags">
+                            <span class="tag">动作</span>
+                            <span class="tag">冒险</span>
+                            <span class="tag">剧情</span>
+                        </div>
+                        <div class="game-last-played">最后游玩：3周前</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成就标签 -->
+        <div class="tab-content" id="achievements">
+            <div class="achievements-section">
+                <div class="achievements-header">
+                    <h2 class="section-title">最近成就</h2>
+                    <div class="progress-info">
+                        <span>总体完成度：</span>
+                        <span class="progress-percentage">78%</span>
+                    </div>
+                </div>
+                <div class="achievements-grid">
+                    <!-- 成就 1 -->
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">黑客大师</h3>
+                            <p class="achievement-description">在《赛博奥德赛2077》中破解50个安全系统</p>
+                            <div class="achievement-date">解锁于：2025年4月12日</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就 2 -->
+                    <div class="achievement-card">
+                        <div class="achievement-icon">⚔️</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">战斗专家</h3>
+                            <p class="achievement-description">使用近战武器击败100个敌人</p>
+                            <div class="achievement-date">解锁于：2025年4月10日</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就 3 -->
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🌟</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">完美赛车手</h3>
+                            <p class="achievement-description">在《极速冲刺》中以3星完成所有比赛</p>
+                            <div class="achievement-date">解锁于：2025年4月5日</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就 4（未解锁） -->
+                    <div class="achievement-card achievement-locked">
+                        <div class="achievement-icon">🔒</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">隐藏成就</h3>
+                            <p class="achievement-description">完成一个秘密任务以解锁</p>
+                            <div class="achievement-date">未解锁</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就 5 -->
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🔮</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">神秘大师</h3>
+                            <p class="achievement-description">在《神秘传说》中收集所有12件魔法神器</p>
+                            <div class="achievement-date">解锁于：2025年3月28日</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就 6（未解锁） -->
+                    <div class="achievement-card achievement-locked">
+                        <div class="achievement-icon">🔒</div>
+                        <div class="achievement-info">
+                            <h3 class="achievement-name">舰队指挥官</h3>
+                            <p class="achievement-description">在《星际前线》中建造一支50艘船的舰队</p>
+                            <div class="achievement-date">未解锁</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 好友标签 -->
+        <div class="tab-content" id="friends">
+            <div class="friends-grid">
+                <!-- 好友 1 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 1">
+                    </div>
+                    <h3 class="friend-name">萨拉·陈</h3>
+                    <div class="friend-status">在线</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">邀请</button>
+                    </div>
+                </div>
+                
+                <!-- 好友 2 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 2">
+                    </div>
+                    <h3 class="friend-name">迈克·罗德里格斯</h3>
+                    <div class="friend-status">正在游戏中：赛博奥德赛2077</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">加入游戏</button>
+                    </div>
+                </div>
+                
+                <!-- 好友 3 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 3">
+                    </div>
+                    <h3 class="friend-name">艾玛·威廉姆斯</h3>
+                    <div class="friend-status offline">离线：2小时前最后在线</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">查看资料</button>
+                    </div>
+                </div>
+                
+                <!-- 好友 4 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 4">
+                    </div>
+                    <h3 class="friend-name">詹姆斯·泰勒</h3>
+                    <div class="friend-status">在线</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">邀请</button>
+                    </div>
+                </div>
+                
+                <!-- 好友 5 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 5">
+                    </div>
+                    <h3 class="friend-name">丽莎·摩根</h3>
+                    <div class="friend-status">正在游戏中：神秘传说</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">加入游戏</button>
+                    </div>
+                </div>
+                
+                <!-- 好友 6 -->
+                <div class="friend-card">
+                    <div class="friend-avatar">
+                        <img src="/placeholder.svg?height=80&width=80" alt="好友 6">
+                    </div>
+                    <h3 class="friend-name">瑞安·库珀</h3>
+                    <div class="friend-status offline">离线：1天前最后在线</div>
+                    <div class="friend-actions">
+                        <button class="friend-btn">发送消息</button>
+                        <button class="friend-btn">查看资料</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动态标签 -->
+        <div class="tab-content" id="activity">
+            <div class="activity-feed">
+                <!-- 动态 1 -->
+                <div class="activity-item">
+                    <div class="activity-header">
+                        <div class="activity-avatar">
+                            <img src="/placeholder.svg?height=50&width=50" alt="用户头像">
+                        </div>
+                        <div class="activity-user">
+                            <div class="activity-username">亚历克斯·约翰逊</div>
+                            <div class="activity-time">2小时前</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        在《赛博奥德赛2077》中刚刚达到50级！新的植入物彻底改变了游戏体验。🎮
+                        <div class="activity-game">
+                            <div class="activity-game-img">
+                                <img src="/placeholder.svg?height=60&width=80" alt="游戏图片">
+                            </div>
+                            <div class="activity-game-info">
+                                <div class="activity-game-title">赛博奥德赛2077</div>
+                                <div class="activity-game-meta">已游玩87小时</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-actions">
+                        <div class="activity-action">👍 点赞 (12)</div>
+                        <div class="activity-action">💬 评论 (3)</div>
+                        <div class="activity-action">🔄 分享</div>
+                    </div>
+                </div>
+                
+                <!-- 动态 2 -->
+                <div class="activity-item">
+                    <div class="activity-header">
+                        <div class="activity-avatar">
+                            <img src="/placeholder.svg?height=50&width=50" alt="用户头像">
+                        </div>
+                        <div class="activity-user">
+                            <div class="activity-username">亚历克斯·约翰逊</div>
+                            <div class="activity-time">昨天</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        刚刚购买了《赛博反乌托邦》！迫不及待想在玩完所有好评之后试试这款游戏。
+                        <div class="activity-game">
+                            <div class="activity-game-img">
+                                <img src="/placeholder.svg?height=60&width=80" alt="游戏图片">
+                            </div>
+                            <div class="activity-game-info">
+                                <div class="activity-game-title">赛博反乌托邦</div>
+                                <div class="activity-game-meta">已加入游戏库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-actions">
+                        <div class="activity-action">👍 点赞 (8)</div>
+                        <div class="activity-action">💬 评论 (1)</div>
+                        <div class="activity-action">🔄 分享</div>
+                    </div>
+                </div>
+                
+                <!-- 动态 3 -->
+                <div class="activity-item">
+                    <div class="activity-header">
+                        <div class="activity-avatar">
+                            <img src="/placeholder.svg?height=50&width=50" alt="用户头像">
+                        </div>
+                        <div class="activity-user">
+                            <div class="activity-username">亚历克斯·约翰逊</div>
+                            <div class="activity-time">3天前</div>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        终于在《极速冲刺》中解锁了"完美赛车手"成就！花了我几周时间才在所有比赛中获得3星。🏎️
+                        <div class="activity-game">
+                            <div class="activity-game-img">
+                                <img src="/placeholder.svg?height=60&width=80" alt="游戏图片">
+                            </div>
+                            <div class="activity-game-info">
+                                <div class="activity-game-title">极速冲刺</div>
+                                <div class="activity-game-meta">已游玩23小时</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-actions">
+                        <div class="activity-action">👍 点赞 (24)</div>
+                        <div class="activity-action">💬 评论 (7)</div>
+                        <div class="activity-action">🔄 分享</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">游戏中心</a>
+            <p>您的终极游戏目的地。在我们的高级游戏平台上发现、游玩并与全球玩家连接。</p>
+            <div class="social-links">
+                <a href="#" class="social-icon">f</a>
+                <a href="#" class="social-icon">t</a>
+                <a href="#" class="social-icon">in</a>
+                <a href="#" class="social-icon">ig</a>
+            </div>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">快速链接</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="#">浏览游戏</a></li>
+                <li><a href="#">类别</a></li>
+                <li><a href="#">优惠与促销</a></li>
+                <li><a href="#">礼品卡</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">支持</h3>
+            <ul class="footer-links">
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="community.html">社区</a></li>
+                <li><a href="#">联系我们</a></li>
+                <li><a href="#">系统状态</a></li>
+                <li><a href="#">开发者API</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-links-section">
+            <h3 class="footer-title">法律</h3>
+            <ul class="footer-links">
+                <li><a href="#">服务条款</a></li>
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">退款政策</a></li>
+                <li><a href="#">Cookie政策</a></li>
+                <li><a href="#">用户协议</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p class="copyright">© 2025 游戏中心。版权所有。</p>
+        <div class="footer-nav">
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+            <a href="#">Cookie</a>
+            <a href="#">设置</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查用户是否已登录
+        function checkLoginStatus() {
+            // 通过localStorage检查登录状态
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // 获取页面元素
+            const notLoggedInDiv = document.getElementById('not-logged-in');
+            const profileContentDiv = document.getElementById('profile-content');
+            
+            // 根据登录状态显示对应内容
+            if (isLoggedIn) {
+                notLoggedInDiv.style.display = 'none';
+                profileContentDiv.style.display = 'block';
+            } else {
+                notLoggedInDiv.style.display = 'block';
+                profileContentDiv.style.display = 'none';
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        checkLoginStatus();
+
+        // 标签切换
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签的active类
+                tabs.forEach(t => t.classList.remove('active'));
+                // 为点击的标签添加active类
+                tab.classList.add('active');
+                
+                // 隐藏所有标签内容
+                const tabContents = document.querySelectorAll('.tab-content');
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // 显示对应的标签内容
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 游戏卡片悬停动画
+        const gameCards = document.querySelectorAll('.game-card');
+        gameCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px)';
+                card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            });
+        });
+
+        // 好友卡片悬停动画
+        const friendCards = document.querySelectorAll('.friend-card');
+        friendCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+
+        // 动态消息动态加载（模拟）
+        setTimeout(() => {
+            const newActivity = document.createElement('div');
+            newActivity.className = 'activity-item';
+            newActivity.innerHTML = `
+                <div class="activity-header">
+                    <div class="activity-avatar">
+                        <img src="/placeholder.svg?height=50&width=50" alt="好友头像">
+                    </div>
+                    <div class="activity-user">
+                        <div class="activity-username">迈克·罗德里格斯</div>
+                        <div class="activity-time">刚刚</div>
+                    </div>
+                </div>
+                <div class="activity-content">
+                    @gamehunter90 想邀请你今晚一起玩《赛博奥德赛2077》的多人模式？
+                </div>
+                <div class="activity-actions">
+                    <div class="activity-action">👍 点赞</div>
+                    <div class="activity-action">💬 评论</div>
+                    <div class="activity-action">🔄 分享</div>
+                </div>
+            `;
+            
+            const activityFeed = document.querySelector('.activity-feed');
+            if (activityFeed && document.getElementById('activity').classList.contains('active')) {
+                activityFeed.insertBefore(newActivity, activityFeed.firstChild);
+                newActivity.style.opacity = '0';
+                newActivity.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    newActivity.style.opacity = '1';
+                    newActivity.style.transform = 'translateY(0)';
+                    newActivity.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                }, 100);
+            }
+        }, 10000);
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const cartButton = document.querySelector('.user-actions .btn');
+            if (cartButton) {
+                cartButton.textContent = `购物车 (${totalItems})`;
+            }
+        }
+
+        // 页面加载时初始化购物车数量
+        updateCartCount();
+
+        // 退出登录按钮点击事件
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('确定要退出登录吗？')) {
+                    // 清除登录状态
+                    localStorage.removeItem('isLoggedIn');
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

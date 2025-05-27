@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏中心 - 登录/注册</title>
+    <!-- 导入字体图标 -->
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_4387491_ey2ql7jlkxl.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 字体无法选中 */
+            user-select: none;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            background-color: #1a2030;
+            color: #94a3b8;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 视频背景 */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        /* 导航栏 */
+        header {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 4px 15px -1px rgba(0, 0, 0, 0.2), 0 0 8px rgba(102, 192, 244, 0.2);
+            border-bottom: 1px solid rgba(102, 192, 244, 0.15);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #66c0f4;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #66c0f4;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #f9fafb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #66c0f4;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #66c0f4;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-bar input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            color: #f9fafb;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+            width: 250px;
+        }
+
+        .search-bar::before {
+            content: '🔍';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .nav-btn {
+            background-color: #66c0f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background-color: #1a9fff;
+            transform: translateY(-2px);
+        }
+
+        .shell {
+            position: relative;
+            width: 1000px;
+            min-width: 1000px;
+            min-height: 600px;
+            height: 600px;
+            padding: 25px;
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), -10px -10px 30px rgba(102, 192, 244, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(102, 192, 244, 0.1);
+            margin-top: 80px; /* 为导航栏留出空间 */
+        }
+
+        /* 设置响应式 */
+        @media (max-width: 1200px) {
+            .shell {
+                transform: scale(0.7);
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .shell {
+                transform: scale(0.6);
+                margin-top: -40px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .shell {
+                transform: scale(0.5);
+                margin-top: -80px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .shell {
+                transform: scale(0.4);
+                margin-top: -120px;
+            }
+            
+            .search-bar {
+                display: none;
+            }
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            width: 600px;
+            height: 100%;
+            padding: 25px;
+            background-color: rgba(26, 32, 48, 0.5);
+            backdrop-filter: blur(10px);
+            transition: 1.25s;
+        }
+
+        .form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        .iconfont {
+            margin: 0 10px;
+            border: rgba(102, 192, 244, 0.5) 2px solid;
+            border-radius: 50%;
+            font-size: 25px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #66c0f4;
+            opacity: 0.7;
+            transition: 0.2s;
+        }
+
+        .iconfont:hover {
+            opacity: 1;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .form_input {
+            width: 350px;
+            height: 45px;
+            margin: 8px 0;
+            padding-left: 25px;
+            font-size: 14px;
+            letter-spacing: 0.15px;
+            border: none;
+            outline: none;
+            background-color: rgba(23, 30, 46, 0.7);
+            color: #f9fafb;
+            transition: 0.25s ease;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3), inset -2px -2px 4px rgba(102, 192, 244, 0.05);
+            border: 1px solid rgba(102, 192, 244, 0.1);
+        }
+
+        .form_input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form_input:focus {
+            box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.4), inset -4px -4px 4px rgba(102, 192, 244, 0.1);
+            border-color: rgba(102, 192, 244, 0.3);
+        }
+
+        .form_span {
+            margin-top: 30px;
+            margin-bottom: 16px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .form_link {
+            color: #66c0f4;
+            font-size: 15px;
+            margin-top: 25px;
+            border-bottom: 1px solid rgba(102, 192, 244, 0.3);
+            line-height: 2;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .form_link:hover {
+            color: #1a9fff;
+            border-bottom-color: #1a9fff;
+        }
+
+        .title {
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 3;
+            color: #f9fafb;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(102, 192, 244, 0.3);
+        }
+
+        .description {
+            font-size: 14px;
+            letter-spacing: 0.25px;
+            text-align: center;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .button {
+            width: 180px;
+            height: 50px;
+            border-radius: 25px;
+            margin-top: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1.15px;
+            background-color: #66c0f4;
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(102, 192, 244, 0.2);
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #1a9fff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 192, 244, 0.3);
+        }
+
+        .a-container {
+            z-index: 100;
+            left: calc(100% - 600px);
+        }
+
+        .b-container {
+            left: calc(100% - 600px);
+            z-index: 0;
+        }
+
+        .switch {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 400px;
+            padding: 50px;
+            z-index: 200;
+            transition: 1.25s;
+            background-color: rgba(23, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3), -4px -4px 20px rgba(102, 192, 244, 0.05);
+            border-radius: 16px;
+        }
+
+        .switch_circle {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(102, 192, 244, 0.1) 0%, rgba(26, 32, 48, 0.8) 70%);
+            box-shadow: inset 8px 8px 12px rgba(0, 0, 0, 0.3), inset -8px -8px 12px rgba(102, 192, 244, 0.05);
+            bottom: -60%;
+            left: -60%;
+            transition: 1.25s;
+        }
+
+        .switch_circle-t {
+            top: -30%;
+            left: 60%;
+            width: 300px;
+            height: 300px;
+        }
+
+        .switch_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: absolute;
+            width: 400px;
+            padding: 50px 55px;
+            transition: 1.25s;
+        }
+
+        .switch_button {
+            cursor: pointer;
+        }
+
+        .switch_button:hover,
+        .submit:hover {
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 192, 244, 0.3);
+            transform: translateY(-3px);
+            transition: 0.25s;
+        }
+
+        .switch_button:active,
+        .switch_button:focus {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(102, 192, 244, 0.2);
+            transform: translateY(-1px);
+            transition: 0.25s;
+        }
+
+        .is-txr {
+            left: calc(100% - 400px);
+            transition: 1.25s;
+            transform-origin: left;
+        }
+
+        .is-txl {
+            left: 0;
+            transition: 1.25s;
+            transform-origin: right;
+        }
+
+        .is-z {
+            z-index: 200;
+            transition: 1.25s;
+        }
+
+        .is-hidden {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            transition: 1.25s;
+        }
+
+        .is-gx {
+            animation: is-gx 1.25s;
+        }
+
+        @keyframes is-gx {
+
+            0%,
+            10%,
+            100% {
+                width: 400px;
+            }
+
+            30%,
+            50% {
+                width: 500px;
+            }
+        }
+
+        /* 添加自然边框效果 */
+        .switch::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(102, 192, 244, 0.5), transparent 50%, rgba(102, 192, 244, 0.3));
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .form_icons {
+            display: flex;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 视频背景 -->
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="./video/登录视频.mp4" type="video/mp4">
+        您的浏览器不支持视频标签。
+    </video>
+
+    <!-- 导航栏 -->
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <div class="logo-icon"></div>
+                游戏中心
+            </a>
+            <div class="nav-links">
+                <a href="index.html">商店</a>
+                <a href="library.html">我的游戏库</a>
+                <a href="profile.html">个人资料</a>
+                <a href="wishlist.html">愿望单</a>
+                <a href="community.html">社区</a>
+                <a href="news.html">新闻</a>
+                <a href="order-page.html">订单</a>
+            </div>
+            <div class="user-actions">
+                <form id="header-search-form" action="search-results.html" method="GET">
+                    <div class="search-bar">
+                        <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+                    </div>
+                </form>
+                <a href="cart.html" class="nav-btn">购物车 (0)</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="shell">
+        <div class="container a-container" id="a-container">
+            <form action="" method="" class="form" id="a-form">
+                <h2 class="form_title title">创建账号</h2>
+                <div class="form_icons">
+                    <i class="iconfont icon-QQ"></i>
+                    <i class="iconfont icon-weixin"></i>
+                    <i class="iconfont icon-bilibili-line"></i>
+                </div>
+                <span class="form_span">选择注册方式或电子邮箱注册</span>
+                <input type="text" class="form_input" placeholder="用户名">
+                <input type="email" class="form_input" placeholder="邮箱">
+                <input type="password" class="form_input" placeholder="密码">
+                <button class="form_button button submit">注册</button>
+            </form>
+        </div>
+
+        <div class="container b-container" id="b-container">
+            <form action="" method="" class="form" id="b-form">
+                <h2 class="form_title title">登录账号</h2>
+                <div class="form_icons">
+                    <i class="iconfont icon-QQ"></i>
+                    <i class="iconfont icon-weixin"></i>
+                    <i class="iconfont icon-bilibili-line"></i>
+                </div>
+                <span class="form_span">选择登录方式或电子邮箱登录</span>
+                <input type="email" class="form_input" id="login-email" placeholder="邮箱">
+                <input type="password" class="form_input" id="login-password" placeholder="密码">
+                <a class="form_link">忘记密码？</a>
+                <div class="login-message" id="login-message" style="color: #ff6b6b; margin-top: 10px; text-align: center; font-size: 14px; display: none;"></div>
+                <button type="button" class="form_button button submit" id="login-btn">登录</button>
+            </form>
+        </div>
+
+        <div class="switch" id="switch-cnt">
+            <div class="switch_circle"></div>
+            <div class="switch_circle switch_circle-t"></div>
+            <div class="switch_container" id="switch-c1">
+                <h2 class="switch_title title" style="letter-spacing: 0;">欢迎回来！</h2>
+                <p class="switch_description description">已经有账号了吗？登录账号开始您的游戏冒险之旅！</p>
+                <button class="switch_button button switch-btn">登录</button>
+            </div>
+
+            <div class="switch_container is-hidden" id="switch-c2">
+                <h2 class="switch_title title" style="letter-spacing: 0;">你好，冒险者！</h2>
+                <p class="switch_description description">注册一个账号，成为我们的一员，探索无限游戏世界！</p>
+                <button class="switch_button button switch-btn">注册</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let switchCtn = document.querySelector("#switch-cnt");
+        let switchC1 = document.querySelector("#switch-c1");
+        let switchC2 = document.querySelector("#switch-c2");
+        let switchCircle = document.querySelectorAll(".switch_circle");
+        let switchBtn = document.querySelectorAll(".switch-btn");
+        let aContainer = document.querySelector("#a-container");
+        let bContainer = document.querySelector("#b-container");
+        let allButtons = document.querySelectorAll(".submit");
+
+        let getButtons = (e) => e.preventDefault()
+        let changeForm = (e) => {
+            // 修改类名
+            switchCtn.classList.add("is-gx");
+            setTimeout(function () {
+                switchCtn.classList.remove("is-gx");
+            }, 1500)
+            switchCtn.classList.toggle("is-txr");
+            switchCircle[0].classList.toggle("is-txr");
+            switchCircle[1].classList.toggle("is-txr");
+
+            switchC1.classList.toggle("is-hidden");
+            switchC2.classList.toggle("is-hidden");
+            aContainer.classList.toggle("is-txl");
+            bContainer.classList.toggle("is-txl");
+            bContainer.classList.toggle("is-z");
+        }
+        // 点击切换
+        let shell = (e) => {
+            for (var i = 0; i < allButtons.length; i++)
+                allButtons[i].addEventListener("click", getButtons);
+            for (var i = 0; i < switchBtn.length; i++)
+                switchBtn[i].addEventListener("click", changeForm)
+        }
+        window.addEventListener("load", shell);
+
+        // 登录验证功能
+        document.addEventListener("DOMContentLoaded", function() {
+            const loginBtn = document.getElementById("login-btn");
+            const loginEmail = document.getElementById("login-email");
+            const loginPassword = document.getElementById("login-password");
+            const loginMessage = document.getElementById("login-message");
+
+            // 添加登录按钮点击事件
+            loginBtn.addEventListener("click", function() {
+                // 获取用户输入
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value.trim();
+                
+                // 验证邮箱和密码
+                if(email === "zzq040721@qq.com" && password === "123456") {
+                    // 设置登录状态到localStorage
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // 显示登录成功消息
+                    loginMessage.style.display = "block";
+                    loginMessage.style.color = "#4ade80";
+                    loginMessage.textContent = "登录成功！正在跳转到个人页面...";
+                    
+                    // 1秒后跳转到个人页面
+                    setTimeout(function() {
+                        window.location.href = "profile.html";
+                    }, 1000);
+                } else {
+                    // 显示错误消息
+                    loginMessage.style.display = "block";
+                    loginMessage.style.color = "#ff6b6b";
+                    loginMessage.textContent = "邮箱或密码错误，请重试！";
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

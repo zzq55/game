@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搜索结果 - 游戏中心</title>
+<style>
+:root {
+    --primary: #1a2030;
+    --secondary: #1e293b;
+    --accent: #66c0f4;
+    --accent-hover: #1a9fff;
+    --text: #f9fafb;
+    --text-secondary: #94a3b8;
+    --card-bg: #171e2e;
+    --card-hover: #202a3c;
+    --success: #4ade80;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--primary);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+/* Header & Navigation */
+header {
+    background-color: var(--secondary);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background-color: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--accent);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after, .nav-links a.active::after {
+    width: 100%;
+}
+
+.user-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-bar {
+    position: relative;
+}
+
+.search-bar input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    color: var(--text);
+    width: 200px;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.15);
+    width: 250px;
+}
+
+.search-bar::before {
+    content: '🔍';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.btn {
+    background-color: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+/* Search Container */
+.search-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Search Header */
+.search-header {
+    margin-bottom: 2rem;
+}
+
+.search-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.search-subtitle {
+    color: var(--text-secondary);
+}
+
+/* Search Layout */
+.search-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+/* Search Filters */
+.search-filters {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.filters-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-label {
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.filter-checkbox label {
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.filter-checkbox:hover label {
+    color: var(--text);
+}
+
+.filter-range {
+    margin-top: 0.5rem;
+}
+
+.range-values {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.range-slider {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    position: relative;
+}
+
+.range-progress {
+    position: absolute;
+    height: 100%;
+    background-color: var(--accent);
+    border-radius: 2px;
+    width: 60%;
+}
+
+.range-handle {
+    width: 16px;
+    height: 16px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.range-handle.start {
+    left: 0;
+}
+
+.range-handle.end {
+    left: 60%;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.filter-tag {
+    background-color: rgba(102, 192, 244, 0.1);
+    color: var(--accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-tag:hover {
+    background-color: rgba(102, 192, 244, 0.2);
+}
+
+.filter-tag.active {
+    background-color: var(--accent);
+    color: white;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.filter-actions .btn {
+    flex: 1;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+.btn-outline:hover {
+    background-color: rgba(102, 192, 244, 0.1);
+}
+
+/* Search Results */
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Search Bar */
+.search-bar-large {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.search-bar-large input {
+    width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem 1rem 1rem 3rem;
+    color: var(--text);
+    font-size: 1.1rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-bar-large input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-bar-large::before {
+    content: '🔍';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+/* Results Header */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.results-count {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.results-count span {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.results-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-label {
+    color: var(--text-secondary);
+}
+
+.sort-select {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* Results Grid */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.game-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+.game-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.game-card:hover .game-img {
+    transform: scale(1.05);
+}
+
+.game-content {
+    padding: 1.5rem;
+}
+
+.game-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.game-tag {
+    background-color: rgba(102, 192, 244, 0.1);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.game-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.game-title a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.game-title a:hover {
+    color: var(--accent);
+}
+
+.game-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.game-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.rating-stars {
+    color: #f59e0b;
+}
+
+.game-release {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.game-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.price-discount {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.discount-badge {
+    background-color: var(--success);
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.original-price {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+/* No Results */
+.no-results {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 3rem;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.no-results-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.no-results-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.no-results-message {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.suggested-searches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.suggested-search {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.suggested-search:hover {
+    background-color: rgba(102, 192, 244, 0.2);
+    color: var(--accent);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+    gap: 0.5rem;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border: none;
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover, .page-btn.active {
+    background-color: var(--accent);
+    color: white;
+}
+
+.page-arrow {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+footer {
+    background-color: var(--secondary);
+    padding: 4rem 2rem 2rem;
+    color: var(--text-secondary);
+    margin-top: 4rem;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.footer-about p {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.social-icon:hover {
+    background-color: var(--accent);
+}
+
+.footer-title {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease, padding-left 0.3s ease;
+    display: inline-block;
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.copyright {
+    font-size: 0.9rem;
+}
+
+.footer-nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-nav a:hover {
+    color: var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .search-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .search-filters {
+        position: static;
+        margin-bottom: 2rem;
+    }
+
+    .filter-groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-groups {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+<body>
+<!-- Header & Navigation -->
+<header>
+<nav>
+    <a href="index.html" class="logo">
+        <div class="logo-icon">游</div>
+        游戏中心
+    </a>
+    <div class="nav-links">
+        <a href="index.html">商店</a>
+        <a href="library.html">我的游戏库</a>
+        <a href="profile.html">个人资料</a>
+        <a href="wishlist.html">愿望单</a>
+        <a href="community.html">社区</a>
+        <a href="news.html">新闻</a>
+        <a href="order-page.html">订单</a>
+    </div>
+    <div class="user-actions">
+        <form id="header-search-form" action="search-results.html" method="GET">
+            <div class="search-bar">
+                <input type="text" name="query" placeholder="搜索游戏..." id="header-search-input">
+            </div>
+        </form>
+        <a href="cart.html" class="btn" id="cart-btn">购物车 (<span id="cart-count">0</span>)</a>
+    </div>
+</nav>
+</header>
+
+<!-- Search Container -->
+<div class="search-container">
+<div class="search-header">
+    <h1 class="search-title">搜索结果</h1>
+    <p class="search-subtitle" id="search-subtitle">加载中...</p>
+</div>
+
+<!-- Search Layout -->
+<div class="search-layout">
+    <!-- Search Filters -->
+    <div class="search-filters">
+        <h3 class="filters-title">筛选条件</h3>
+        
+        <div class="filter-groups">
+            <!-- Genre Filter -->
+            <div class="filter-group">
+                <label class="filter-label">游戏类型</label>
+                <div class="filter-options" id="genre-filters">
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="genre-rpg" class="genre-filter" value="角色扮演">
+                        <label for="genre-rpg">角色扮演</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="genre-action" class="genre-filter" value="动作">
+                        <label for="genre-action">动作</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="genre-adventure" class="genre-filter" value="冒险">
+                        <label for="genre-adventure">冒险</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="genre-strategy" class="genre-filter" value="策略">
+                        <label for="genre-strategy">策略</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="genre-simulation" class="genre-filter" value="模拟">
+                        <label for="genre-simulation">模拟</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+                <label class="filter-label">价格范围</label>
+                <div class="filter-range">
+                    <div class="range-values">
+                        <span id="min-price">¥0</span>
+                        <span id="max-price">¥399</span>
+                    </div>
+                    <div class="range-slider">
+                        <div class="range-progress"></div>
+                        <div class="range-handle start" id="price-start"></div>
+                        <div class="range-handle end" id="price-end"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rating Filter -->
+            <div class="filter-group">
+                <label class="filter-label">评分</label>
+                <div class="filter-options">
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="rating-5" class="rating-filter" value="5">
+                        <label for="rating-5">5 星</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="rating-4" class="rating-filter" value="4">
+                        <label for="rating-4">4+ 星</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="rating-3" class="rating-filter" value="3">
+                        <label for="rating-3">3+ 星</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="rating-2" class="rating-filter" value="2">
+                        <label for="rating-2">2+ 星</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features Filter -->
+            <div class="filter-group">
+                <label class="filter-label">特性</label>
+                <div class="filter-options">
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="feature-multiplayer" class="feature-filter" value="多人游戏">
+                        <label for="feature-multiplayer">多人游戏</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="feature-controller" class="feature-filter" value="控制器支持">
+                        <label for="feature-controller">控制器支持</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="feature-openworld" class="feature-filter" value="开放世界">
+                        <label for="feature-openworld">开放世界</label>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="feature-singleplayer" class="feature-filter" value="单人游戏">
+                        <label for="feature-singleplayer">单人游戏</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Release Date Filter -->
+            <div class="filter-group">
+                <label class="filter-label">发布日期</label>
+                <div class="filter-tags" id="release-date-filters">
+                    <div class="filter-tag" data-days="30">最近30天</div>
+                    <div class="filter-tag" data-days="90">最近90天</div>
+                    <div class="filter-tag" data-days="365">最近一年</div>
+                    <div class="filter-tag active" data-days="0">不限时间</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-actions">
+            <button class="btn btn-outline" id="reset-filters">重置筛选</button>
+            <button class="btn" id="apply-filters">应用筛选</button>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="search-results">
+        <!-- Search Bar -->
+        <form id="main-search-form" action="search-results.html" method="GET">
+            <div class="search-bar-large">
+                <input type="text" name="query" placeholder="搜索游戏..." id="main-search-input">
+            </div>
+        </form>
+        
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-count">显示 <span id="results-count">0</span> 条结果</div>
+            <div class="results-sort">
+                <span class="sort-label">排序方式:</span>
+                <select class="sort-select" id="sort-select">
+                    <option value="relevance">相关性</option>
+                    <option value="price-asc">价格: 从低到高</option>
+                    <option value="price-desc">价格: 从高到低</option>
+                    <option value="release-date">发布日期</option>
+                    <option value="rating">评分</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Results Grid -->
+        <div class="results-grid" id="results-grid">
+            <!-- 游戏卡片将由JavaScript动态加载 -->
+            <div class="loading-message">正在加载搜索结果...</div>
+        </div>
+        
+        <!-- No Results -->
+        <div class="no-results" id="no-results" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <h2 class="no-results-title">未找到结果</h2>
+            <p class="no-results-message">抱歉，我们找不到与您搜索匹配的游戏。请尝试不同的关键词或浏览我们的推荐。</p>
+            <div class="suggested-searches">
+                <div class="suggested-search">角色扮演</div>
+                <div class="suggested-search">动作冒险</div>
+                <div class="suggested-search">策略</div>
+                <div class="suggested-search">多人游戏</div>
+                <div class="suggested-search">开放世界</div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: none;">
+            <button class="page-btn page-arrow" id="prev-page">◀</button>
+            <div id="page-buttons">
+                <!-- 页码按钮将由JavaScript动态生成 -->
+            </div>
+            <button class="page-btn page-arrow" id="next-page">▶</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Footer -->
+<footer>
+<div class="footer-content">
+    <div class="footer-about">
+        <a href="index.html" class="footer-logo">游戏中心</a>
+        <p>您的终极游戏目的地。在我们的高级游戏平台上发现、玩游戏并与全球玩家连接。</p>
+        <div class="social-links">
+            <a href="#" class="social-icon">f</a>
+            <a href="#" class="social-icon">t</a>
+            <a href="#" class="social-icon">in</a>
+            <a href="#" class="social-icon">ig</a>
+        </div>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">快速链接</h3>
+        <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="#">浏览游戏</a></li>
+            <li><a href="#">分类</a></li>
+            <li><a href="#">优惠与促销</a></li>
+            <li><a href="#">礼品卡</a></li>
+        </ul>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">支持</h3>
+        <ul class="footer-links">
+            <li><a href="#">帮助中心</a></li>
+            <li><a href="community.html">社区</a></li>
+            <li><a href="#">联系我们</a></li>
+            <li><a href="#">系统状态</a></li>
+            <li><a href="#">开发者API</a></li>
+        </ul>
+    </div>
+    
+    <div class="footer-links-section">
+        <h3 class="footer-title">法律</h3>
+        <ul class="footer-links">
+            <li><a href="#">服务条款</a></li>
+            <li><a href="#">隐私政策</a></li>
+            <li><a href="#">退款政策</a></li>
+            <li><a href="#">Cookie政策</a></li>
+            <li><a href="#">用户协议</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="footer-bottom">
+    <p class="copyright">© 2025 游戏中心。保留所有权利。</p>
+    <div class="footer-nav">
+        <a href="#">隐私</a>
+        <a href="#">条款</a>
+        <a href="#">Cookies</a>
+        <a href="#">设置</a>
+    </div>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取搜索输入框和表单
+    const headerSearchForm = document.getElementById('header-search-form');
+    const headerSearchInput = document.getElementById('header-search-input');
+    const mainSearchForm = document.getElementById('main-search-form');
+    const mainSearchInput = document.getElementById('main-search-input');
+    
+    // 处理头部搜索表单提交
+    headerSearchForm.addEventListener('submit', function(e) {
+        // 移除空值检查，允许空搜索
+        const query = headerSearchInput.value.trim();
+        if (query) {
+            document.getElementById('search-subtitle').textContent = `显示"${query}"的搜索结果`;
+            loadSearchResults(query);
+        } else {
+            document.getElementById('search-subtitle').textContent = '浏览所有游戏';
+            loadAllGames();
+        }
+        e.preventDefault(); // 阻止表单默认提交，使用我们的自定义处理
+    });
+    
+    // 处理主搜索表单提交
+    mainSearchForm.addEventListener('submit', function(e) {
+        // 移除空值检查，允许空搜索
+        const query = mainSearchInput.value.trim();
+        if (query) {
+            document.getElementById('search-subtitle').textContent = `显示"${query}"的搜索结果`;
+            loadSearchResults(query);
+        } else {
+            document.getElementById('search-subtitle').textContent = '浏览所有游戏';
+            loadAllGames();
+        }
+        e.preventDefault(); // 阻止表单默认提交，使用我们的自定义处理
+    });
+
+    // 全局变量
+    let allGames = []; // 存储所有游戏数据
+    let filteredGames = []; // 存储筛选后的游戏
+    let currentPage = 1;
+    const gamesPerPage = 8;
+    let activeFilters = {
+        genres: [],
+        ratings: [],
+        features: [],
+        priceRange: [0, 399],
+        releaseDate: 0 // 0表示不限时间，其他值表示天数
+    };
+
+    // 初始化页面
+    initPage();
+    
+    // 页面初始化函数
+    function initPage() {
+        // 从URL获取搜索词
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query') || '';
+        
+        // 设置搜索框的值
+        headerSearchInput.value = query;
+        mainSearchInput.value = query;
+        
+        // 如果有搜索词，加载搜索结果
+        if (query) {
+            document.getElementById('search-subtitle').textContent = `显示"${query}"的搜索结果`;
+            loadSearchResults(query);
+        } else {
+            document.getElementById('search-subtitle').textContent = '浏览所有游戏';
+            loadAllGames();
+        }
+
+        // 设置筛选器事件监听
+        setupFilterEvents();
+    }
+
+    // 加载所有游戏数据
+    function loadAllGames() {
+        fetch('games.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                return response.json();
+            })
+            .then(data => {
+                allGames = data.games;
+                filteredGames = [...allGames];
+                updateResultsCount(filteredGames.length);
+                renderGames(filteredGames);
+            })
+            .catch(error => {
+                console.error('获取游戏数据失败:', error);
+                showNoResults();
+            });
+    }
+
+    // 根据搜索词加载游戏
+    function loadSearchResults(query) {
+        fetch('games.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                return response.json();
+            })
+            .then(data => {
+                allGames = data.games;
+                
+                // 执行搜索
+                const searchResults = searchGames(allGames, query);
+                filteredGames = searchResults;
+                
+                if (searchResults.length > 0) {
+                    updateResultsCount(searchResults.length);
+                    renderGames(searchResults);
+                } else {
+                    showNoResults();
+                }
+            })
+            .catch(error => {
+                console.error('获取游戏数据失败:', error);
+                showNoResults();
+            });
+    }
+
+    // 搜索游戏函数
+    function searchGames(games, query) {
+        if (!query) return games; // 当搜索词为空时返回所有游戏
+        
+        const searchTerms = query.toLowerCase().split(/\s+/);
+        
+        return games.filter(game => {
+            // 在标题、描述、类型、标签中搜索
+            const titleMatch = game.title.toLowerCase().includes(query.toLowerCase());
+            const descMatch = game.description.toLowerCase().includes(query.toLowerCase());
+            
+            // 在类型和标签中搜索所有术语
+            const genreMatches = game.genres.some(genre => 
+                searchTerms.some(term => genre.toLowerCase().includes(term))
+            );
+            
+            const tagMatches = game.tags.some(tag => 
+                searchTerms.some(term => tag.toLowerCase().includes(term))
+            );
+            
+            return titleMatch || descMatch || genreMatches || tagMatches;
+        });
+    }
+
+    // 渲染游戏卡片
+    function renderGames(games) {
+        const resultsGrid = document.getElementById('results-grid');
+        const noResults = document.getElementById('no-results');
+        const pagination = document.getElementById('pagination');
+        
+        if (games.length === 0) {
+            resultsGrid.style.display = 'none';
+            pagination.style.display = 'none';
+            noResults.style.display = 'block';
+            return;
+        }
+        
+        // 清空结果网格并显示
+        resultsGrid.innerHTML = '';
+        resultsGrid.style.display = 'grid';
+        noResults.style.display = 'none';
+        
+        // 分页处理
+        const totalPages = Math.ceil(games.length / gamesPerPage);
+        if (currentPage > totalPages) currentPage = 1;
+        
+        const startIndex = (currentPage - 1) * gamesPerPage;
+        const endIndex = Math.min(startIndex + gamesPerPage, games.length);
+        const currentGames = games.slice(startIndex, endIndex);
+        
+        // 创建游戏卡片
+        currentGames.forEach(game => {
+            const gameCard = createGameCard(game);
+            resultsGrid.appendChild(gameCard);
+        });
+        
+        // 更新分页
+        updatePagination(games.length, gamesPerPage);
+    }
+
+    // 创建游戏卡片
+    function createGameCard(game) {
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        
+        // 生成星级显示
+        const fullStars = Math.floor(game.rating);
+        const halfStar = game.rating % 1 >= 0.5 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStar;
+        const starRating = '★'.repeat(fullStars) + (halfStar ? '☆' : '') + '☆'.repeat(emptyStars);
+        
+        // 获取年份
+        const releaseYear = new Date(game.release_date).getFullYear();
+        
+        // 构建HTML
+        gameCard.innerHTML = `
+            <img src="${game.cover_image}" alt="${game.title}" class="game-img">
+            <div class="game-content">
+                <div class="game-tags">
+                    ${game.genres.slice(0, 3).map(genre => 
+                        `<span class="game-tag">${genre}</span>`
+                    ).join('')}
+                </div>
+                <h3 class="game-title"><a href="game-detalis.html?id=${game.id}">${game.title}</a></h3>
+                <div class="game-meta">
+                    <div class="game-rating">
+                        <span class="rating-stars">${starRating}</span>
+                        <span>${game.rating.toFixed(1)}</span>
+                    </div>
+                    <div class="game-release">${releaseYear}</div>
+                </div>
+                <div class="game-price">
+                    <div class="price-amount">¥${game.price.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        
+        // 设置点击事件
+        gameCard.querySelector('.game-title a').addEventListener('click', function(e) {
+            window.location.href = `game-detalis.html?id=${game.id}`;
+        });
+        
+        return gameCard;
+    }
+
+    // 更新分页
+    function updatePagination(totalGames, gamesPerPage) {
+        const pagination = document.getElementById('pagination');
+        const pageButtons = document.getElementById('page-buttons');
+        const totalPages = Math.ceil(totalGames / gamesPerPage);
+        
+        if (totalPages <= 1) {
+            pagination.style.display = 'none';
+            return;
+        }
+        
+        pagination.style.display = 'flex';
+        pageButtons.innerHTML = '';
+        
+        // 创建页码按钮
+        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            pageBtn.textContent = i;
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                renderGames(filteredGames);
+                window.scrollTo({
+                    top: document.querySelector('.search-header').offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+            pageButtons.appendChild(pageBtn);
+        }
+        
+        if (totalPages > 5) {
+            const ellipsis = document.createElement('button');
+            ellipsis.className = 'page-btn';
+            ellipsis.textContent = '...';
+            ellipsis.disabled = true;
+            pageButtons.appendChild(ellipsis);
+            
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.className = 'page-btn';
+            lastPageBtn.textContent = totalPages;
+            lastPageBtn.addEventListener('click', () => {
+                currentPage = totalPages;
+                renderGames(filteredGames);
+                window.scrollTo({
+                    top: document.querySelector('.search-header').offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+            pageButtons.appendChild(lastPageBtn);
+        }
+        
+        // 上一页/下一页按钮
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderGames(filteredGames);
+                window.scrollTo({
+                    top: document.querySelector('.search-header').offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderGames(filteredGames);
+                window.scrollTo({
+                    top: document.querySelector('.search-header').offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    }
+
+    // 显示无结果页面
+    function showNoResults() {
+        document.getElementById('results-grid').style.display = 'none';
+        document.getElementById('pagination').style.display = 'none';
+        document.getElementById('no-results').style.display = 'block';
+        updateResultsCount(0);
+    }
+
+    // 更新结果数量
+    function updateResultsCount(count) {
+        document.getElementById('results-count').textContent = count;
+    }
+
+    // 设置筛选器事件监听
+    function setupFilterEvents() {
+        // 类型筛选器
+        const genreCheckboxes = document.querySelectorAll('.genre-filter');
+        genreCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    activeFilters.genres.push(this.value);
+                } else {
+                    activeFilters.genres = activeFilters.genres.filter(genre => genre !== this.value);
+                }
+            });
+        });
+        
+        // 评分筛选器
+        const ratingCheckboxes = document.querySelectorAll('.rating-filter');
+        ratingCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    activeFilters.ratings.push(parseInt(this.value));
+                } else {
+                    activeFilters.ratings = activeFilters.ratings.filter(rating => rating !== parseInt(this.value));
+                }
+            });
+        });
+        
+        // 特性筛选器
+        const featureCheckboxes = document.querySelectorAll('.feature-filter');
+        featureCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    activeFilters.features.push(this.value);
+                } else {
+                    activeFilters.features = activeFilters.features.filter(feature => feature !== this.value);
+                }
+            });
+        });
+        
+        // 发布日期筛选器
+        const releaseDateFilters = document.querySelectorAll('#release-date-filters .filter-tag');
+        releaseDateFilters.forEach(filter => {
+            filter.addEventListener('click', function() {
+                releaseDateFilters.forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                activeFilters.releaseDate = parseInt(this.getAttribute('data-days'));
+            });
+        });
+        
+        // 价格范围筛选器
+        setupPriceRangeSlider();
+        
+        // 应用筛选按钮
+        document.getElementById('apply-filters').addEventListener('click', applyFilters);
+        
+        // 重置筛选按钮
+        document.getElementById('reset-filters').addEventListener('click', resetFilters);
+        
+        // 排序选择器
+        document.getElementById('sort-select').addEventListener('change', function() {
+            sortGames(this.value);
+        });
+        
+        // 建议搜索
+        const suggestedSearches = document.querySelectorAll('.suggested-search');
+        suggestedSearches.forEach(search => {
+            search.addEventListener('click', function() {
+                mainSearchInput.value = this.textContent;
+                mainSearchForm.submit();
+            });
+        });
+    }
+
+    // 设置价格范围滑块
+    function setupPriceRangeSlider() {
+        const rangeHandles = document.querySelectorAll('.range-handle');
+        const rangeProgress = document.querySelector('.range-progress');
+        const minPriceElement = document.getElementById('min-price');
+        const maxPriceElement = document.getElementById('max-price');
+        
+        // 初始位置
+        rangeProgress.style.width = '100%';
+        
+        rangeHandles.forEach(handle => {
+            handle.addEventListener('mousedown', function() {
+                const isStart = this.classList.contains('start');
+                
+                document.addEventListener('mousemove', moveHandle);
+                document.addEventListener('mouseup', function() {
+                    document.removeEventListener('mousemove', moveHandle);
+                });
+                
+                function moveHandle(e) {
+                    const slider = document.querySelector('.range-slider');
+                    const sliderRect = slider.getBoundingClientRect();
+                    let position = (e.clientX - sliderRect.left) / sliderRect.width;
+                    position = Math.max(0, Math.min(1, position));
+                    
+                    // 价格范围从0到399
+                    const priceRange = 399;
+                    
+                    if (isStart) {
+                        const endHandle = document.querySelector('.range-handle.end');
+                        const endPosition = parseFloat(endHandle.style.left) / 100 || 1;
+                        
+                        position = Math.min(position, endPosition);
+                        handle.style.left = `${position * 100}%`;
+                        rangeProgress.style.left = `${position * 100}%`;
+                        rangeProgress.style.width = `${(endPosition - position) * 100}%`;
+                        
+                        const price = Math.round(position * priceRange);
+                        minPriceElement.textContent = `¥${price}`;
+                        activeFilters.priceRange[0] = price;
+                    } else {
+                        const startHandle = document.querySelector('.range-handle.start');
+                        const startPosition = parseFloat(startHandle.style.left) / 100 || 0;
+                        
+                        position = Math.max(position, startPosition);
+                        handle.style.left = `${position * 100}%`;
+                        rangeProgress.style.width = `${(position - startPosition) * 100}%`;
+                        
+                        const price = Math.round(position * priceRange);
+                        maxPriceElement.textContent = `¥${price}`;
+                        activeFilters.priceRange[1] = price;
+                    }
+                }
+            });
+        });
+    }
+
+    // 应用筛选器
+    function applyFilters() {
+        if (allGames.length === 0) return;
+        
+        // 克隆所有游戏数组或使用搜索结果
+        let results = [...allGames];
+        const query = mainSearchInput.value;
+        
+        if (query) {
+            results = searchGames(results, query);
+        }
+        
+        // 应用类型筛选
+        if (activeFilters.genres.length > 0) {
+            results = results.filter(game => 
+                game.genres.some(genre => 
+                    activeFilters.genres.includes(genre)
+                )
+            );
+        }
+        
+        // 应用评分筛选
+        if (activeFilters.ratings.length > 0) {
+            results = results.filter(game => {
+                return activeFilters.ratings.some(rating => game.rating >= rating);
+            });
+        }
+        
+        // 应用特性筛选
+        if (activeFilters.features.length > 0) {
+            results = results.filter(game => {
+                let matchesFeature = false;
+                
+                activeFilters.features.forEach(feature => {
+                    if (feature === '开放世界' && 
+                        (game.genres.includes('开放世界') || game.tags.includes('开放世界'))) {
+                        matchesFeature = true;
+                    }
+                    
+                    if (feature === '多人游戏' && 
+                        (game.player_mode.includes('多人') || game.tags.includes('多人'))) {
+                        matchesFeature = true;
+                    }
+                    
+                    if (feature === '单人游戏' && 
+                        game.player_mode.includes('单人')) {
+                        matchesFeature = true;
+                    }
+                    
+                    if (feature === '控制器支持') {
+                        matchesFeature = true; // 假设所有游戏都支持控制器
+                    }
+                });
+                
+                return matchesFeature;
+            });
+        }
+        
+        // 应用价格范围筛选
+        results = results.filter(game => 
+            game.price >= activeFilters.priceRange[0] && 
+            game.price <= activeFilters.priceRange[1]
+        );
+        
+        // 应用发布日期筛选
+        if (activeFilters.releaseDate > 0) {
+            const today = new Date();
+            const cutoffDate = new Date();
+            cutoffDate.setDate(today.getDate() - activeFilters.releaseDate);
+            
+            results = results.filter(game => {
+                const releaseDate = new Date(game.release_date);
+                return releaseDate >= cutoffDate;
+            });
+        }
+        
+        // 更新筛选结果
+        filteredGames = results;
+        currentPage = 1;
+        
+        // 应用当前排序
+        const sortSelect = document.getElementById('sort-select');
+        sortGames(sortSelect.value);
+        
+        if (results.length > 0) {
+            updateResultsCount(results.length);
+            renderGames(results);
+        } else {
+            showNoResults();
+        }
+    }
+
+    // 重置筛选器
+    function resetFilters() {
+        // 重置复选框
+        document.querySelectorAll('.filter-checkbox input').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // 重置发布日期
+        document.querySelectorAll('#release-date-filters .filter-tag').forEach(tag => {
+            tag.classList.remove('active');
+        });
+        document.querySelector('#release-date-filters .filter-tag[data-days="0"]').classList.add('active');
+        
+        // 重置排序
+        document.getElementById('sort-select').value = 'relevance';
+        
+        // 重置价格范围滑块
+        const rangeProgress = document.querySelector('.range-progress');
+        const startHandle = document.querySelector('.range-handle.start');
+        const endHandle = document.querySelector('.range-handle.end');
+        
+        rangeProgress.style.left = '0';
+        rangeProgress.style.width = '100%';
+        startHandle.style.left = '0';
+        endHandle.style.left = '100%';
+        
+        document.getElementById('min-price').textContent = '¥0';
+        document.getElementById('max-price').textContent = '¥399';
+        
+        // 重置活动筛选器对象
+        activeFilters = {
+            genres: [],
+            ratings: [],
+            features: [],
+            priceRange: [0, 399],
+            releaseDate: 0
+        };
+        
+        // 如果有搜索词，应用搜索
+        const query = mainSearchInput.value;
+        if (query) {
+            loadSearchResults(query);
+        } else {
+            // 否则显示所有游戏
+            filteredGames = [...allGames];
+            currentPage = 1;
+            updateResultsCount(allGames.length);
+            renderGames(allGames);
+        }
+    }
+
+    // 排序游戏
+    function sortGames(sortBy) {
+        if (filteredGames.length === 0) return;
+        
+        let sortedGames = [...filteredGames];
+        
+        switch (sortBy) {
+            case 'price-asc':
+                sortedGames.sort((a, b) => a.price - b.price);
+                break;
+                
+            case 'price-desc':
+                sortedGames.sort((a, b) => b.price - a.price);
+                break;
+                
+            case 'release-date':
+                sortedGames.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+                break;
+                
+            case 'rating':
+                sortedGames.sort((a, b) => b.rating - a.rating);
+                break;
+                
+            case 'relevance':
+            default:
+                // 如果有搜索词，根据相关性排序
+                const query = mainSearchInput.value;
+                if (query) {
+                    const searchTerms = query.toLowerCase().split(/\s+/);
+                    
+                    sortedGames.sort((a, b) => {
+                        // 计算相关性分数
+                        const scoreA = calculateRelevanceScore(a, searchTerms);
+                        const scoreB = calculateRelevanceScore(b, searchTerms);
+                        
+                        return scoreB - scoreA;
+                    });
+                }
+                break;
+        }
+        
+        filteredGames = sortedGames;
+        currentPage = 1;
+        renderGames(filteredGames);
+    }
+
+    // 计算相关性分数
+    function calculateRelevanceScore(game, searchTerms) {
+        let score = 0;
+        
+        // 标题匹配得高分
+        if (searchTerms.some(term => game.title.toLowerCase().includes(term))) {
+            score += 10;
+        }
+        
+        // 类型匹配
+        game.genres.forEach(genre => {
+            if (searchTerms.some(term => genre.toLowerCase().includes(term))) {
+                score += 5;
+            }
+        });
+        
+        // 标签匹配
+        game.tags.forEach(tag => {
+            if (searchTerms.some(term => tag.toLowerCase().includes(term))) {
+                score += 3;
+            }
+        });
+        
+        // 描述匹配
+        if (searchTerms.some(term => game.description.toLowerCase().includes(term))) {
+            score += 2;
+        }
+        
+        return score;
+    }
+
+    // 游戏卡片悬停效果
+    document.addEventListener('mouseover', function(e) {
+        const gameCard = e.target.closest('.game-card');
+        if (gameCard) {
+            gameCard.style.transform = 'translateY(-10px)';
+            gameCard.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)';
+        }
+    });
+    
+    document.addEventListener('mouseout', function(e) {
+        const gameCard = e.target.closest('.game-card');
+        if (gameCard) {
+            gameCard.style.transform = '';
+            gameCard.style.boxShadow = '';
+        }
+    });
+
+    // 更新购物车数量显示
+    function updateCartCount() {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartCount = document.getElementById('cart-count');
+        cartCount.textContent = cartItems.length;
+    }
+
+    // 初始化时更新购物车数量
+    updateCartCount();
+});
+</script>
+</body>
+</html>
