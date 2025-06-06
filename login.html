@@ -544,10 +544,11 @@
                     <i class="iconfont icon-bilibili-line"></i>
                 </div>
                 <span class="form_span">选择注册方式或电子邮箱注册</span>
-                <input type="text" class="form_input" placeholder="用户名">
-                <input type="email" class="form_input" placeholder="邮箱">
-                <input type="password" class="form_input" placeholder="密码">
-                <button class="form_button button submit">注册</button>
+                <input type="text" class="form_input" id="register-username" placeholder="用户名">
+                <input type="email" class="form_input" id="register-email" placeholder="邮箱">
+                <input type="password" class="form_input" id="register-password" placeholder="密码">
+                <div class="register-message" id="register-message" style="color: #ff6b6b; margin-top: 10px; text-align: center; font-size: 14px; display: none;"></div>
+                <button type="button" class="form_button button submit" id="register-btn">注册</button>
             </form>
         </div>
 
@@ -628,16 +629,103 @@
             const loginPassword = document.getElementById("login-password");
             const loginMessage = document.getElementById("login-message");
 
+            // 注册功能相关元素
+            const registerBtn = document.getElementById("register-btn");
+            const registerUsername = document.getElementById("register-username");
+            const registerEmail = document.getElementById("register-email");
+            const registerPassword = document.getElementById("register-password");
+            const registerMessage = document.getElementById("register-message");
+
+            // 添加注册按钮点击事件
+            registerBtn.addEventListener("click", function() {
+                // 获取用户输入
+                const username = registerUsername.value.trim();
+                const email = registerEmail.value.trim();
+                const password = registerPassword.value.trim();
+
+                // 简单的输入验证
+                if (!username || !email || !password) {
+                    registerMessage.style.display = "block";
+                    registerMessage.style.color = "#ff6b6b";
+                    registerMessage.textContent = "请填写所有必填项！";
+                    return;
+                }
+
+                // 验证邮箱格式
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    registerMessage.style.display = "block";
+                    registerMessage.style.color = "#ff6b6b";
+                    registerMessage.textContent = "请输入有效的邮箱地址！";
+                    return;
+                }
+
+                // 验证密码长度
+                if (password.length < 6) {
+                    registerMessage.style.display = "block";
+                    registerMessage.style.color = "#ff6b6b";
+                    registerMessage.textContent = "密码长度至少为6位！";
+                    return;
+                }
+
+                // 验证用户名长度
+                if (username.length < 2 || username.length > 20) {
+                    registerMessage.style.display = "block";
+                    registerMessage.style.color = "#ff6b6b";
+                    registerMessage.textContent = "用户名长度应在2-20位之间！";
+                    return;
+                }
+
+                // 模拟注册成功
+                // 在实际应用中，这里应该是一个后端API调用
+                const userData = {
+                    username: username,
+                    email: email,
+                    password: password
+                };
+
+                // 将用户数据存储到localStorage（实际应用中应该存储到后端数据库）
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // 检查邮箱是否已被注册
+                if (users.some(user => user.email === email)) {
+                    registerMessage.style.display = "block";
+                    registerMessage.style.color = "#ff6b6b";
+                    registerMessage.textContent = "该邮箱已被注册！";
+                    return;
+                }
+
+                // 添加新用户
+                users.push(userData);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // 显示注册成功消息
+                registerMessage.style.display = "block";
+                registerMessage.style.color = "#4ade80";
+                registerMessage.textContent = "注册成功！请切换到登录页面进行登录。";
+
+                // 清空输入框
+                registerUsername.value = "";
+                registerEmail.value = "";
+                registerPassword.value = "";
+            });
+
             // 添加登录按钮点击事件
             loginBtn.addEventListener("click", function() {
                 // 获取用户输入
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value.trim();
                 
-                // 验证邮箱和密码
-                if(email === "zzq040721@qq.com" && password === "123456") {
+                // 从localStorage获取用户数据
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // 查找匹配的用户
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if(user) {
                     // 设置登录状态到localStorage
                     localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUser', JSON.stringify(user));
                     
                     // 显示登录成功消息
                     loginMessage.style.display = "block";
